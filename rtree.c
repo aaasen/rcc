@@ -16,7 +16,7 @@ typedef struct rtree{
 } rtree;
 
 /* Add the specified point to the specified rtree */
-rtree* addrt(rtree * tree, point * p){
+rtree* putrt(rtree * tree, point * p){
   if (tree->leaf){
     //TODO Add point to points
     //Realloc as necessary

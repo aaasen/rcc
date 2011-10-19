@@ -23,9 +23,11 @@ typedef struct rtree{
   struct rtree * sub2;/* Second sub tree if a leaf node */
 } rtree;
 
-rtree* addrt(rtree * tree, point * p);/* Add the specified point to the specified rtree */
+rtree* putrt(rtree * tree, point * p);/* Add the specified point to the specified rtree */
 
-rtree* remrt(rtree * tree, point * p);/* Recursively find and remove the point from the tree */
+void bputrt(rtree * tree, point * p, int n);/* Efficiently bulk add all of the points in p */
+
+rtree* rmrt(rtree * tree, point * p);/* Recursively find and remove the point from the tree */
 
 rtree* findrt(rtree * tree, point * p);/* Recursively find the specified point in the tree */
 
@@ -34,7 +36,5 @@ int subrt(rtree * tree);/* Subdivide the selected rtree if a leaf and if meets s
 int resizert(rtree * tree);/* Recursively resize the tree, return false if rebuilding might be necessary */
 
 void rebuildrt(rtree * tree);/* Recursively rebuild the entire tree, optimizing search time */
-
-void bulkrt(rtree * tree, point * p, int n);/* Efficiently bulk add all of the points in p */
 
 #endif
