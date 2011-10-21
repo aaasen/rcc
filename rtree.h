@@ -31,6 +31,8 @@ rtree* rmrt(rtree * tree, point * p);/* Recursively find and remove the point fr
 
 rtree* findrt(rtree * tree, point * p);/* Recursively find the specified point in the tree */
 
+double sdevrt(rtree * tree);/* Returns the standard deviation of the y value for the tree */
+
 int subrt(rtree * tree);/* Subdivide the selected rtree if a leaf and if meets subdivision reqs */
 
 int resizert(rtree * tree);/* Recursively resize the tree, return false if rebuilding might be necessary */

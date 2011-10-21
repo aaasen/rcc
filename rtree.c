@@ -1,4 +1,6 @@
 #include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
 
 typedef struct point{
 	double x, y, z;
@@ -17,12 +19,11 @@ typedef struct rtree{
 
 /* Add the specified point to the specified rtree */
 rtree* putrt(rtree * tree, point * p){
-	if (tree->leaf){
-	  //TODO Add point to points
-	  //Realloc as necessary
-	  resize(tree);
-	} else {
-
+  if (tree->leaf){
+    //TODO Add point to points
+    //Realloc as necessary
+    resizert(tree);
+  }
 }
 }
 
@@ -37,6 +38,28 @@ void bputrt(rtree* tree, point* p, int n){
 	subrt(tree);
 }
 
+/* 
+ * Returns the standard deviation of the y (depth) value for the rtree.
+ * Returns 0 if the tree is not a leaf - a branch can not and should not be subdivided.
+ * Currently used for checking if the tree should be subdivided.
+ */
+double sdevrt(rtree * tree){
+  if (tree->n == 0 || !tree->leaf){
+    return 0;
+  }
+  int i;
+  int total = 0;
+  for (i = 0; i < tree->n; i++){
+    total += tree->points[i].z;
+  }
+  double mean = total / tree->n;
+  double sumSqr = 0;
+  for (i = 0; i < tree->n; i++){
+    sumSqr += pow(tree->points[i].z - mean, 2);
+  }
+  return sqrt(sumSqr / (tree->n - 1));
+}
+
 /* Subdivide the selected rtree if a leaf and if meets subdivision reqs */
 int subrt(rtree* tree){
 	return 0;
@@ -44,9 +67,14 @@ int subrt(rtree* tree){
 
 /* Recursively find and remove the point from the tree */
 rtree* remrt(rtree* tree, point * p){
-	if (node){
-	  //Check if point is in list, and remove
-	} else {
-	  
-	}
+  if (tree->leaf){
+    //Check if point is in list, and remove
+  } else {
+    
+  }
+}
+
+/* Recursively resize the tree, return false if rebuilding might be necessary */
+int resizert(rtree * tree){
+  return 0;
 }
