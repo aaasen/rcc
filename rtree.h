@@ -9,18 +9,18 @@
 #include <stdlib.h>
 
 typedef struct point{
-  double x, y, z;
+	double x, y, z;
 } point;
 
 typedef struct rtree{
-  int n;/* Number of points in the section of a tree */
-  point * points;/* Array of points within the rtree */
-  double x, y, z;/* Corner of prism */
-  double x1, y1, z1;/* Opposite corner of prism */
-  int leaf;/* True if this tree is a leaf, false if a branch */
-  /* Possibly make into an n-child rtree, if faster */
-  struct rtree * sub1;/* First sub tree if a leaf node */
-  struct rtree * sub2;/* Second sub tree if a leaf node */
+	int n;/* Number of points in the section of a tree */
+	point * points;/* Array of points within the rtree */
+	double x, y, z;/* Corner of prism */
+	double x1, y1, z1;/* Opposite corner of prism */
+	int leaf;/* True if this tree is a leaf, false if a branch */
+	/* Possibly make into an n-child rtree, if faster */
+	struct rtree * sub1;/* First sub tree if a leaf node */
+	struct rtree * sub2;/* Second sub tree if a leaf node */
 } rtree;
 
 rtree* putrt(rtree * tree, point * p);/* Add the specified point to the specified rtree */
