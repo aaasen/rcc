@@ -24,11 +24,27 @@ rtree* putrt(rtree * tree, point * p){
   }
 }
 
+/* Efficiently bulk add all of the points in p */
+void bputrt(rtree* tree, point* p, int n){
+  tree->points = (point*)realloc(tree->points, n + tree->n);
+  int i;
+  for (i = 0; i < n; i ++){
+    tree->points[i + tree->n] = p[i];
+  }
+  tree->n += n;
+  subrt(tree);
+}
+
+/* Subdivide the selected rtree if a leaf and if meets subdivision reqs */
+int subrt(rtree* tree){
+  return 0;
+}
+
 /* Recursively find and remove the point from the tree */
-rtree* remrt(rtree * tree, point * p){
+rtree* remrt(rtree* tree, point * p){
   if (node){
     //Check if point is in list, and remove
   } else {
-
+    
   }
 }
