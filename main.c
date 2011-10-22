@@ -8,7 +8,8 @@ int main(void){
   rt->leaf = 1;
   rt->n = 2;
   rt->points[1].z = 45;
-  rt->points[0].z = 44;
-  printf("Standard Deviation: %f\n", sdevrt(rt));
+  rt->points[0].z = 40;
+  subrt(rt);
+  printf("Standard Deviation: %f\n", sdevrt(rt, NULL, NULL));
   return 0;
 }

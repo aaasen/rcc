@@ -13,15 +13,17 @@ typedef struct point{
 } point;
 
 typedef struct rtree{
-	int n;/* Number of points in the section of a tree */
-	point * points;/* Array of points within the rtree */
-	double x, y, z;/* Corner of prism */
+  int n;/* Number of points in the section of a tree */
+  point * points;/* Array of points within the rtree */
+  double x, y, z;/* Corner of prism */
 	double x1, y1, z1;/* Opposite corner of prism */
 	int leaf;/* True if this tree is a leaf, false if a branch */
 	/* Possibly make into an n-child rtree, if faster */
 	struct rtree * sub1;/* First sub tree if a leaf node */
 	struct rtree * sub2;/* Second sub tree if a leaf node */
 } rtree;
+
+void setxyz(point* p, double x, double y, double z);/* Give the point the specified x, y, z */
 
 rtree* putrt(rtree * tree, point * p);/* Add the specified point to the specified rtree */
 
@@ -31,7 +33,7 @@ rtree* rmrt(rtree * tree, point * p);/* Recursively find and remove the point fr
 
 rtree* findrt(rtree * tree, point * p);/* Recursively find the specified point in the tree */
 
-double sdevrt(rtree * tree);/* Returns the standard deviation of the y value for the tree */
+double sdevrt(rtree * tree, point * max, point * min);/* Returns the standard deviation of the y value for the tree */
 
 int subrt(rtree * tree);/* Subdivide the selected rtree if a leaf and if meets subdivision reqs */
 
