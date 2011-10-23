@@ -26,15 +26,14 @@ typedef struct rtree{
 	struct rtree * sub2;/* Second sub tree if a leaf node */
 } rtree;
 
-/* returns absolute value of double num */
-double dabs(double num);
-
 /* get the width, height and depth of the rtree */
 double getwrt(rtree* tree);
 double gethrt(rtree* tree);
 double getdrt(rtree* tree);
 
 void setxyz(point* p, double x, double y, double z);/* Give the point the specified x, y, z */
+
+int peq(point* p1, point* p2); /* returns true if points are equal, false if not */
 
 rtree* putrt(rtree * tree, point * p);/* Add the specified point to the specified rtree */
 

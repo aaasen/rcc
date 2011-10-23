@@ -42,11 +42,11 @@ typedef struct rtree{
 	struct rtree * sub2;/* Second sub tree if a leaf node */
 } rtree;
 
-double dabs(double num);
 double getwrt(rtree* tree);
 double gethrt(rtree* tree);
 double getdrt(rtree* tree);
 void setxyz(point* p, double x, double y, double z);
+int peq(point* p1, point* p2);
 rtree* putrt(rtree * tree, point * p);
 double rszaxis(double center, double width, double point);
 double rszsum(rtree* tree, point* p);
@@ -56,10 +56,6 @@ double sdevrt(rtree * tree, point * max, point * min);
 int subrt(rtree * tree);
 int resizert(rtree * tree);
 void rebuildrt(rtree * tree);
-
-double dabs(double num) {
-	return num >= 0 ? num : -num;
-}
 
 double getwrt(rtree* tree) {
 	return dabs(tree->p1.x - tree->p2.x);
@@ -78,6 +74,10 @@ void setxyz(point* p, double x, double y, double z){
 	p->x = x;
 	p->y = y;
 	p->z = z;
+}
+
+int peq(point* p1, point* p2) {
+	return p1->x == p2->x && p1->y == p2-> y && p1->z == p2->z ? 1 : 0;
 }
 
 /* Add the specified point to the specified rtree
@@ -139,7 +139,9 @@ void bputrt(rtree* tree, point* p, int n){
 /* Recursively find and remove the point from the tree */
 rtree* remrt(rtree* tree, point * p){
 	if (tree->leaf){
-		//Check if point is in list, and remove
+		int i; for(i = 0; i < tree->n; i++) {
+			
+		}
 	} else {
 		
 	}
