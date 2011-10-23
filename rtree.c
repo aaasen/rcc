@@ -110,7 +110,7 @@ rtree* putrt(rtree * tree, point * p){
 double rszaxis(double center, double width, double point) {
     int direction = (center - point >= 0) ? 1 : -1;
 	double border = center + (direction * width);
-	return abs(point - border);
+	return point - border;
 }
 
 double rszsum(rtree* tree, point* p) {
@@ -118,9 +118,9 @@ double rszsum(rtree* tree, point* p) {
 	double width = getwrt(tree);
 	double height = gethrt(tree);
 	double depth = getdrt(tree);
-	rszsum += rszaxis(tree->p1.x + (width / 2), width, p->x);
-	rszsum += rszaxis(tree->p1.y + (height / 2), height, p->y);
-	rszsum += rszaxis(tree->p1.z + (depth / 2), depth, p->z);
+	rszsum += abs(rszaxis(tree->p1.x + (width / 2), width, p->x));
+	rszsum += abs(rszaxis(tree->p1.y + (height / 2), height, p->y));
+	rszsum += abs(rszaxis(tree->p1.z + (depth / 2), depth, p->z));
 	return rszsum;
 }
 
