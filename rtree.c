@@ -1,12 +1,12 @@
-/*	______________________
- * |	____	 	 	 	 	  | * * * * * * * * * * * * *
- * | |	  |	 	 	 	 	 |	 _	 	 	 __	 	 __	*
- * | | ___|________	 	  |	||\\	 	 / _|	  / _| *
- * | ||	 |	 	 	|	 	 |	|| \\	  / /	 	/ /	 *
- * | ||___|	___	 |	 	 |	|| //	 | |	 	| |	  *
- * |	|	 	|	 |	|	 	 |	||/\\	  \ \_	  \ \_	*
- * |	|	 	|___|	|	 	 |	||	\\	  \__|	  \__| *
- * |	|____________|	 	 |	 	 	 	 	 	 	 	  *
+/*  ______________________
+ * |  ____                | * * * * * * * * * * * * *
+ * | |    |               |   _         __      __  *
+ * | | ___|________       |  ||\\      / _|    / _| *
+ * | ||   |        |      |  || \\    / /     / /   *
+ * | ||___|  ___   |      |  || //   | |     | |    *
+ * |  |     |   |  |      |  ||/\\    \ \_    \ \_  *
+ * |  |     |___|  |      |  ||  \\    \__|    \__| *
+ * |  |____________|      |                         *
  * |______________________| * * * * * * * * * * * * *
  *
  *	 	 	 	 	RTREE COMPRESSION CODEC	 
@@ -140,24 +140,24 @@ double sdevrt(rtree * tree, point * max, point * min){
 	double sumsqr;
 
 	if (tree->n <= 1 || !(tree->leaf)){
-	  return 0;
+		return 0;
 	}
 	total = 0;
 	maxp = &(tree->points[0]);/* Keep track of maximum z value point */
 	minp = &(tree->points[0]);/* Keep track of minimum z value point */
 	for (i = 0; i < tree->n; i++){
-	  total += tree->points[i].z;
-	if (tree->points[i].z > maxp->z){
-		maxp = &(tree->points[i]);
-	}
-	if (tree->points[i].z < minp->z){
-		minp = &(tree->points[i]);
-	}
+		total += tree->points[i].z;
+		if (tree->points[i].z > maxp->z){
+			maxp = &(tree->points[i]);
+		}
+		if (tree->points[i].z < minp->z){
+			minp = &(tree->points[i]);
+		}
 	}
 	if (!(max == NULL || min == NULL)){
-	/* Transfer x,y,z for max and min points */
-	setxyz(max, maxp->x, maxp->y, maxp->z);
-	setxyz(min, minp->x, minp->y, minp->z);
+		/* Transfer x,y,z for max and min points */
+		setxyz(max, maxp->x, maxp->y, maxp->z);
+		setxyz(min, minp->x, minp->y, minp->z);
 	}
 	mean = total / tree->n;
 	sumsqr = 0;
@@ -184,37 +184,37 @@ int subrt(rtree* tree){
 	sdev = sdevrt(tree, max, min);
 	printf("max z: %f\nmin z: %f\n", max->z, min->z);
 	if (sdev > maxsdev){
-	tree->leaf = 0;
-	tree->sub1 = (rtree*)malloc(sizeof(rtree));
-	tree->sub2 = (rtree*)malloc(sizeof(rtree));
-	/* 
-	 * Create new subtrees, starting with the lowest and highest z values possible.
-	 * Sub1 starts with the highest point, sub2 with the lowest.
-	 */
-	setxyz(&tree->sub1->p1, max->x, max->y, max->z);
-	setxyz(&tree->sub1->p2, max->x, max->y, max->z);
-	setxyz(&tree->sub2->p1, min->x, min->y, min->z);
-	setxyz(&tree->sub2->p2, min->x, min->y, min->z);
-	for (i = 0; i < tree->n; i++){
+		tree->leaf = 0;
+		tree->sub1 = (rtree*)malloc(sizeof(rtree));
+		tree->sub2 = (rtree*)malloc(sizeof(rtree));
 		/* 
-		 * putrt(tree, &tree->points[i]);
-		 *
-		 * Use this once putrt is fully written
+		 * Create new subtrees, starting with the lowest and highest z values possible.
+		 * Sub1 starts with the highest point, sub2 with the lowest.
 		 */
-		//		printf("Z - %f\n", tree->points[i].z);
-		sum1 = rssum(tree->sub1, &tree->points[i]);
-		sum2 = rssum(tree->sub2, &tree->points[i]);
-		if (sum2 > sum1){
-		putrt(tree->sub1, &tree->points[i]);
-		} else {
-		putrt(tree->sub2, &tree->points[i]);
+		setxyz(&tree->sub1->p1, max->x, max->y, max->z);
+		setxyz(&tree->sub1->p2, max->x, max->y, max->z);
+		setxyz(&tree->sub2->p1, min->x, min->y, min->z);
+		setxyz(&tree->sub2->p2, min->x, min->y, min->z);
+		for (i = 0; i < tree->n; i++){
+			/* 
+			 * putrt(tree, &tree->points[i]);
+			 *
+			 * Use this once putrt is fully written
+			 */
+			//		printf("Z - %f\n", tree->points[i].z);
+			sum1 = rssum(tree->sub1, &tree->points[i]);
+			sum2 = rssum(tree->sub2, &tree->points[i]);
+			if (sum2 > sum1){
+				putrt(tree->sub1, &tree->points[i]);
+			} else {
+				putrt(tree->sub2, &tree->points[i]);
+			}
 		}
-	}
-	/* Free any unneeded memory in the subtrees, then free the original point array */
-	free(tree->points);
-	tree->points = NULL;
-	tree->n = 0;
-	return 1;
+		/* Free any unneeded memory in the subtrees, then free the original point array */
+		free(tree->points);
+		tree->points = NULL;
+		tree->n = 0;
+		return 1;
 	}	
 	return 0;
 }
