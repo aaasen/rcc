@@ -9,9 +9,9 @@
  * |  |____________|      |                         *
  * |______________________| * * * * * * * * * * * * *
  *
- *               RTREE COMPRESSION CODEC
- *                          
- *     BY                        
+ *              RTREE COMPRESSION CODEC   
+ *   
+ *     BY
  *-------Lane "Laaame" Aasen
  *       ------Eamon "G-Dawg" Gaffney
  *             ------Michael "Nerdberger" Rosenberger
@@ -30,14 +30,17 @@ typedef struct point{
 } point;
 
 typedef struct rtree{
-	int n;/* Number of points in the section of a tree */
-	point * points;/* Array of points within the rtree */
-	double x, y, z;/* Corner of prism */
-	double x1, y1, z1;/* Opposite corner of prism */
-	int leaf;/* True if this tree is a leaf, false if a branch */
-	/* Possibly make into an n-child rtree, if faster */
-	struct rtree * sub1;/* First sub tree if a leaf node */
-	struct rtree * sub2;/* Second sub tree if a leaf node */
+  int n;/* Number of points in the section of a tree */
+  point * points;/* Array of points within the rtree */
+  /*
+   * Should points be used to represent the corners?
+   */
+  point p1; //double x, y, z;/* Corner of prism */
+  point p2; //double x1, y1, z1;/* Opposite corner of prism */
+  int leaf;/* True if this tree is a leaf, false if a branch */
+  /* Possibly make into an n-child rtree, if faster */
+  struct rtree * sub1;/* First sub tree if a leaf node */
+  struct rtree * sub2;/* Second sub tree if a leaf node */
 } rtree;
 
 /* Give the point the specified x, y, z */
@@ -47,19 +50,35 @@ void setxyz(point* p, double x, double y, double z){
   p->z = z;
 }
 
-/* Add the specified point to the specified rtree */
+/* Add the specified point to the specified rtree
+ * Can not resize the rtree, only expand it. e.g. a large prism has been predefined
+ * so that all points that fall within it will be put in it. After a single point
+ * is inserted, the tree should NOT be shrunk to only fit that point.
+ */
 rtree* putrt(rtree * tree, point * p){
-  if (tree->leaf){
-    //TODO Add point to points
-    //Realloc as necessary
-    resizert(tree);
+  if (tree->sub1 == NULL && tree->sub2 == NULL){
+	tree->leaf = 1;
+  }
+  if (p != NULL){
+	if (tree->leaf){
+	  //TODO Add point to points
+	  //Realloc as necessary
+	  tree->n++;
+	  tree->points = (point*)realloc(tree->points, sizeof(point) * tree->n);
+	  tree->points[tree->n - 1] = *p;
+	} else {
+	  /* Select the subtree that can contain the point with the least expansion, or
+	   * if both require the same expansion, add to the first.
+	   */
+	}
   }
 }
 
 /* Efficiently bulk add all of the points in p */
 void bputrt(rtree* tree, point* p, int n){
-	tree->points = (point*)realloc(tree->points, n + tree->n);
 	int i;
+
+	tree->points = (point*)realloc(tree->points, n + tree->n);
 	for (i = 0; i < n; i ++){
 	  tree->points[i + tree->n] = p[i];
 	}
@@ -74,13 +93,19 @@ void bputrt(rtree* tree, point* p, int n){
  * max and min are used to find the highest and lowest points in the tree.
  */
 double sdevrt(rtree * tree, point * max, point * min){
-  if (tree->n == 0 || !(tree->leaf)){
+  int i;
+  int total;
+  point* maxp;
+  point* minp;
+  double mean;
+  double sumsqr;
+
+  if (tree->n <= 1 || !(tree->leaf)){
     return 0;
   }
-  int i;
-  int total = 0;
-  point* maxp = &(tree->points[0]);/* Keep track of maximum z value point */
-  point* minp = &(tree->points[0]);/* Keep track of minimum z value point */
+  total = 0;
+  maxp = &(tree->points[0]);/* Keep track of maximum z value point */
+  minp = &(tree->points[0]);/* Keep track of minimum z value point */
   for (i = 0; i < tree->n; i++){
     total += tree->points[i].z;
 	if (tree->points[i].z > maxp->z){
@@ -95,12 +120,42 @@ double sdevrt(rtree * tree, point * max, point * min){
 	setxyz(max, maxp->x, maxp->y, maxp->z);
 	setxyz(min, minp->x, minp->y, minp->z);
   }
-  double mean = total / tree->n;
-  double sumSqr = 0;
+  mean = total / tree->n;
+  sumsqr = 0;
   for (i = 0; i < tree->n; i++){
-    sumSqr += pow(tree->points[i].z - mean, 2);
+    sumsqr += pow(tree->points[i].z - mean, 2);
   }
-  return sqrt(sumSqr / (tree->n - 1));
+  return sqrt(sumsqr / (tree->n - 1));
+}
+
+/*
+ * Resize Sum
+ * Return the sum of the x, y and z amounds the tree must be expanded to include the point.
+ * This is a placeholder for a less hacky function.
+ * TODO: rewrite this.
+ */
+double rssum(rtree* tree, point* p){
+  int x = 0;
+  int y = 0;
+  int z = 0;
+
+  if (p->x < tree->p1.x){
+	x = tree->p1.x - p->x;
+  } else if (p->x > tree->p2.x){
+	x = p->x - tree->p2.x;
+  }
+  if (p->y < tree->p1.y){
+	y = tree->p1.y - p->y;
+  } else if (p->y > tree->p2.y){
+	y = p->y - tree->p2.y;
+  }
+  if (p->z < tree->p1.z){
+	z = tree->p1.z - p->z;
+  } else if (p->z > tree->p2.z){
+	z = p->z - tree->p2.z;
+  }
+  //  printf("RSSUM: %d - p(z) = %f, p1(z) = %f\n", x + y + z, p->z, tree->p1.z);
+  return x + y + z;
 }
 
 /*
@@ -108,30 +163,50 @@ double sdevrt(rtree * tree, point * max, point * min){
  * Returns false if rtree doesn't need to be subdivided under current rule
 */
 int subrt(rtree* tree){
-  point * max = (point*)malloc(sizeof(point));
-  point * min = (point*)malloc(sizeof(point));
-  double sdev = sdevrt(tree, max, min);
+  point* max;
+  point* min;
+  double sdev;
+  int i;
+  double sum1;
+  double sum2;
+
+  max = (point*)malloc(sizeof(point));
+  min = (point*)malloc(sizeof(point));
+  sdev = sdevrt(tree, max, min);
+  printf("max z: %f\nmin z: %f\n", max->z, min->z);
   if (sdev > maxsdev){
-	tree->leaf = 1;
+	tree->leaf = 0;
 	tree->sub1 = (rtree*)malloc(sizeof(rtree));
 	tree->sub2 = (rtree*)malloc(sizeof(rtree));
-	/* Give each subtree as much memory as it might need */
-	tree->sub1->points = (point*)malloc(sizeof(point) * tree->n);
-	tree->sub2->points = (point*)malloc(sizeof(point) * tree->n);
-	int i;
-	for (i = 0; i < tree.n; i++){
+	/* 
+	 * Create new subtrees, starting with the lowest and highest z values possible.
+	 * Sub1 starts with the highest point, sub2 with the lowest.
+	 */
+	setxyz(&tree->sub1->p1, max->x, max->y, max->z);
+	setxyz(&tree->sub1->p2, max->x, max->y, max->z);
+	setxyz(&tree->sub2->p1, min->x, min->y, min->z);
+	setxyz(&tree->sub2->p2, min->x, min->y, min->z);
+	for (i = 0; i < tree->n; i++){
 	  /* 
-	   * TODO: Add point to appropriate subtree.
-	   * Expand as needed.
+	   * putrt(tree, &tree->points[i]);
+	   *
+	   * Use this once putrt is fully written
 	   */
+	  //	  printf("Z - %f\n", tree->points[i].z);
+	  sum1 = rssum(tree->sub1, &tree->points[i]);
+	  sum2 = rssum(tree->sub2, &tree->points[i]);
+	  if (sum2 > sum1){
+		putrt(tree->sub1, &tree->points[i]);
+	  } else {
+		putrt(tree->sub2, &tree->points[i]);
+	  }
 	}
 	/* Free any unneeded memory in the subtrees, then free the original point array */
-	tree->sub1->points = realloc(tree->sub1->points, sizeof(point) * tree->sub1->n);
-	tree->sub2->points = realloc(tree->sub2->points, sizeof(point) * tree->sub2->n);
 	free(tree->points);
+	tree->points = NULL;
+	tree->n = 0;
 	return 1;
-  }
-  printf("max z: %f\nmin z: %f\n", max->z, min->z);
+  }  
   return 0;
 }
 
