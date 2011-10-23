@@ -26,6 +26,9 @@ typedef struct rtree{
 	struct rtree * sub2;/* Second sub tree if a leaf node */
 } rtree;
 
+/* returns absolute value of double num */
+double dabs(double num);
+
 /* get the width, height and depth of the rtree */
 double getwrt(rtree* tree);
 double gethrt(rtree* tree);
@@ -39,7 +42,7 @@ rtree* putrt(rtree * tree, point * p);/* Add the specified point to the specifie
 double rszaxis(double center, double width, double point);
 
 /* returns the total amount that the node must be resized to accomodate the given point */
-double getrsz(rtree* tree, point* p);
+double rszsum(rtree* tree, point* p);
 
 void bputrt(rtree * tree, point * p, int n);/* Efficiently bulk add all of the points in p */
 

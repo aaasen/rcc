@@ -24,20 +24,6 @@
 
 static int maxsdev = 4; /* Maximum standard deviation within each rtree */
 
-double getwrt(rtree* tree);
-double gethrt(rtree* tree);
-double getdrt(rtree* tree);
-void setxyz(point* p, double x, double y, double z);
-rtree* putrt(rtree * tree, point * p);
-double rszaxis(double center, double width, double point);
-double getrsz(rtree* tree, point* p);
-void bputrt(rtree * tree, point * p, int n);
-rtree* remrt(rtree * tree, point * p);
-double sdevrt(rtree * tree, point * max, point * min);
-int subrt(rtree * tree);
-int resizert(rtree * tree);
-void rebuildrt(rtree * tree);
-
 typedef struct point{
 	double x, y, z;
 } point;
@@ -55,6 +41,25 @@ typedef struct rtree{
 	struct rtree * sub1;/* First sub tree if a leaf node */
 	struct rtree * sub2;/* Second sub tree if a leaf node */
 } rtree;
+
+double dabs(double num);
+double getwrt(rtree* tree);
+double gethrt(rtree* tree);
+double getdrt(rtree* tree);
+void setxyz(point* p, double x, double y, double z);
+rtree* putrt(rtree * tree, point * p);
+double rszaxis(double center, double width, double point);
+double rszsum(rtree* tree, point* p);
+void bputrt(rtree * tree, point * p, int n);
+rtree* remrt(rtree * tree, point * p);
+double sdevrt(rtree * tree, point * max, point * min);
+int subrt(rtree * tree);
+int resizert(rtree * tree);
+void rebuildrt(rtree * tree);
+
+double dabs(double num) {
+	return num >= 0 ? num : -num;
+}
 
 double getwrt(rtree* tree) {
 	return dabs(tree->p1.x - tree->p2.x);
@@ -95,8 +100,8 @@ rtree* putrt(rtree * tree, point * p){
 			/* Select the subtree that can contain the point with the least expansion, or
 			 * if both require the same expansion, add to the first.
 			 */
-			double rszsub1 = getrsz(tree->sub1, p);
-			double rszsub2 = getrsz(tree->sub2, p);
+			double rszsub1 = rszsum(tree->sub1, p);
+			double rszsub2 = rszsum(tree->sub2, p);
 			putrt(rszsub1 >= rszsub2 ? tree->sub1 : tree->sub2, p);
 		}
 	}
@@ -108,7 +113,7 @@ double rszaxis(double center, double width, double point) {
 	return point - border;
 }
 
-double getrsz(rtree* tree, point* p) {
+double rszsum(rtree* tree, point* p) {
 	double rszsum = 0;
 	double width = getwrt(tree);
 	double height = gethrt(tree);
@@ -217,8 +222,8 @@ int subrt(rtree* tree){
 			 * Use this once putrt is fully written
 			 */
 			//		printf("Z - %f\n", tree->points[i].z);
-			sum1 = rssum(tree->sub1, &tree->points[i]);
-			sum2 = rssum(tree->sub2, &tree->points[i]);
+			sum1 = rszsum(tree->sub1, &tree->points[i]);
+			sum2 = rszsum(tree->sub2, &tree->points[i]);
 			if (sum2 > sum1){
 				putrt(tree->sub1, &tree->points[i]);
 			} else {
