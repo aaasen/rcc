@@ -18,12 +18,25 @@
  *	 	 	 	 	 	  ------Dylan "D-Swag" Swiggett
  */
 
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 
 static int maxsdev = 4; /* Maximum standard deviation within each rtree */
+
+double getwrt(rtree* tree);
+double gethrt(rtree* tree);
+double getdrt(rtree* tree);
+void setxyz(point* p, double x, double y, double z);
+rtree* putrt(rtree * tree, point * p);
+double rszaxis(double center, double width, double point);
+double getrsz(rtree* tree, point* p);
+void bputrt(rtree * tree, point * p, int n);
+rtree* remrt(rtree * tree, point * p);
+double sdevrt(rtree * tree, point * max, point * min);
+int subrt(rtree * tree);
+int resizert(rtree * tree);
+void rebuildrt(rtree * tree);
 
 typedef struct point{
 	double x, y, z;
@@ -62,24 +75,6 @@ void setxyz(point* p, double x, double y, double z){
 	p->z = z;
 }
 
-double raxis(double center, double width, double point) {
-	int direction = center - point >= 0 ? 1 : -1;
-	double border = center * (direction * width);
-	return point - border;
-}
-
-double getrsz(rtree* tree, point* p) {
-	double rszsum = 0;
-	double width = getwrt(tree);
-	double height = gethrt(tree);
-	double depth = getdrt(tree);
-	rszsum += raxis(tree->p1.x + (width / 2), width, p->x);
-	rszsum += raxis(tree->p1.y + (height / 2), height, p->y);
-	rszsum += raxis(tree->p1.z + (depth / 2), depth, p->z);
-	return rszsum;
-}
-
-
 /* Add the specified point to the specified rtree
  * Can not resize the rtree, only expand it. e.g. a large prism has been predefined
  * so that all points that fall within it will be put in it. After a single point
@@ -107,10 +102,21 @@ rtree* putrt(rtree * tree, point * p){
 	}
 }
 
-/* analyzes the readiness (fitness) of a leaf node to contain the specified point */
-/* lower values are better */
-float fitnode(rtree* node, point* p) {
+double rszaxis(double center, double width, double point) {
+	int direction = center - point >= 0 ? 1 : -1;
+	double border = center * (direction * width);
+	return point - border;
+}
 
+double getrsz(rtree* tree, point* p) {
+	double rszsum = 0;
+	double width = getwrt(tree);
+	double height = gethrt(tree);
+	double depth = getdrt(tree);
+	rszsum += rszaxis(tree->p1.x + (width / 2), width, p->x);
+	rszsum += rszaxis(tree->p1.y + (height / 2), height, p->y);
+	rszsum += rszaxis(tree->p1.z + (depth / 2), depth, p->z);
+	return rszsum;
 }
 
 /* Efficiently bulk add all of the points in p */
@@ -123,6 +129,15 @@ void bputrt(rtree* tree, point* p, int n){
 	}
 	tree->n += n;
 	subrt(tree);
+}
+
+/* Recursively find and remove the point from the tree */
+rtree* remrt(rtree* tree, point * p){
+	if (tree->leaf){
+		//Check if point is in list, and remove
+	} else {
+		
+	}
 }
 
 /* 
@@ -219,16 +234,12 @@ int subrt(rtree* tree){
 	return 0;
 }
 
-/* Recursively find and remove the point from the tree */
-rtree* remrt(rtree* tree, point * p){
-	if (tree->leaf){
-		//Check if point is in list, and remove
-	} else {
-		
-	}
-}
-
 /* Recursively resize the tree, return false if rebuilding might be necessary */
 int resizert(rtree * tree){
 	return 0;
+}
+
+/* Recursively rebuild the entire tree, optimizing search time */
+void rebuildrt(rtree * tree) {
+
 }
