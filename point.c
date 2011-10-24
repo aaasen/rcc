@@ -17,5 +17,5 @@ void setxyz(point* p, double x, double y, double z){
 
 /* TODO revise peq and make sure it isn't causing a segfault */
 int peq(point* p1, point* p2) {
-	//return p1->x == p2->x && p1->y == p2-> y && p1->z == p2->z ? 1 : 0;
+	return p1->x == p2->x && p1->y == p2-> y && p1->z == p2->z ? 1 : 0;
 }
