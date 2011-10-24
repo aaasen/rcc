@@ -16,10 +16,16 @@ int main(void){
 	printf("n1: %d\nn2: %d\n", rt->sub1->n, rt->sub2->n);
 	printf("Standard Deviation sub1: %f\n", sdevrt(rt->sub1, NULL, NULL));
 	printf("Standard Deviation sub2: %f\n", sdevrt(rt->sub2, NULL, NULL));
-	
-	point* p1, *p2;
-	setxyz(p1, 0, 0, 0);
-	setxyz(p2, 0, 0, 0);
-	printf("p1 and p2 are %s\n", peq(p1, p2) ? "equal" : "inequal");
+
+	//TODO figure out why there is a segfault after "pre xyz 2 debug"
+/*	printf("init debug\n");*/
+/*	point* p1;*/
+/*	printf("pre xyz 1 debug\n");*/
+/*	setxyz(p1, 0, 0, 0);*/
+/*	point* pa;*/
+/*	printf("pre xyz 2 debug\n");*/
+/*	setxyz(pa, 1, 1, 1);*/
+/*	printf("pre peq debug\n");*/
+/*	//printf("p1 and p2 are %s\n", peq(p1, p2) ? "equal" : "inequal");*/
 	return 0;
 }

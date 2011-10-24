@@ -58,15 +58,15 @@ int resizert(rtree * tree);
 void rebuildrt(rtree * tree);
 
 double getwrt(rtree* tree) {
-	return dabs(tree->p1.x - tree->p2.x);
+	return fabs(tree->p1.x - tree->p2.x);
 }
 
 double gethrt(rtree* tree) {
-	return dabs(tree->p1.y - tree->p2.y);
+	return fabs(tree->p1.y - tree->p2.y);
 }
 
 double getdrt(rtree* tree) {
-	return dabs(tree->p1.z - tree->p2.z);
+	return fabs(tree->p1.z - tree->p2.z);
 }
 
 /* Give the point the specified x, y, z */
@@ -76,8 +76,9 @@ void setxyz(point* p, double x, double y, double z){
 	p->z = z;
 }
 
+/* TODO revise peq and make sure it isn't causing a segfault */
 int peq(point* p1, point* p2) {
-	return p1->x == p2->x && p1->y == p2-> y && p1->z == p2->z ? 1 : 0;
+	//return p1->x == p2->x && p1->y == p2-> y && p1->z == p2->z ? 1 : 0;
 }
 
 /* Add the specified point to the specified rtree
@@ -138,13 +139,15 @@ void bputrt(rtree* tree, point* p, int n){
 
 /* Recursively find and remove the point from the tree */
 rtree* remrt(rtree* tree, point * p){
-	if (tree->leaf){
-		int i; for(i = 0; i < tree->n; i++) {
-			
-		}
-	} else {
-		
-	}
+/*	if (tree->leaf){*/
+/*		int i; for(i = 0; i < tree->n; i++) {*/
+/*			if(peq(p, tree->points[i])) {*/
+/*				//remove point, realloc	*/
+/*			}*/
+/*		}*/
+/*	} else {*/
+/*		*/
+/*	}*/
 }
 
 /* 
