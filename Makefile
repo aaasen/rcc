@@ -9,8 +9,8 @@
 # make run - do full compile and clean, then run
 
 CFLAGS = -Wall -lm
-FILES = main.c rtree.c
-OBJECTS = main.o rtree.o
+FILES = main.c rtree.c point.c
+OBJECTS = main.o rtree.o point.o
 MAIN = main
 CC = gcc
 OUTPUT = rtree

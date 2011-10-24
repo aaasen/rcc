@@ -1,4 +1,22 @@
-/*
+/*  ______________________
+ * |  ____                | * * * * * * * * * * * * *
+ * | |    |               |   _         __      __  *
+ * | | ___|________       |  ||\\      / _|    / _| *
+ * | ||   |        |      |  || \\    / /     / /   *
+ * | ||___|  ___   |      |  || //   | |     | |    *
+ * |  |     |   |  |      |  ||/\\    \ \_    \ \_  *
+ * |  |     |___|  |      |  ||  \\    \__|    \__| *
+ * |  |____________|      |                         *
+ * |______________________| * * * * * * * * * * * * *
+ *
+ *	 	 	 	 	RTREE COMPRESSION CODEC	 
+ *	 
+ *	 	BY
+ *-------Lane "Laaame" Aasen
+ *	 	  ------Eamon "G-Dawg" Gaffney
+ *	 	 	 	  ------Michael "Nerdberger" Rosenberger
+ *	 	 	 	 	 	  ------Dylan "D-Swag" Swiggett
+ *
  * A basic 3-dimensional R-tree, supporting insertion, deletion, resizing, rebuilding
  * and bulk loading of points.
  */
@@ -7,10 +25,9 @@
 #define RTREE_H
 
 #include <stdlib.h>
-
-typedef struct point{
-	double x, y, z;
-} point;
+#include <stdio.h>
+#include <math.h>
+#include "point.h"
 
 typedef struct rtree{
 	int n;/* Number of points in the section of a tree */
