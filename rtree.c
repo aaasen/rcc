@@ -80,6 +80,7 @@ rtree* putrt(rtree * tree, point * p){
 			tree->n++;
 			tree->points = (point*)realloc(tree->points, sizeof(point) * tree->n);
 			tree->points[tree->n - 1] = *p;
+			subrt(tree); /* subdivides the rtree (remember that subrt() checks if the node meets criteria before subdividing)
 		} else {
 			/* Select the subtree that can contain the point with the least expansion, or
 			 * if both require the same expansion, add to the first.
