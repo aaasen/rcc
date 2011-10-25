@@ -1,6 +1,6 @@
 # Make file by Dylan Swiggett
 # Written on Linux Mint 11
-# Probably doesn't work on windows, haven't tested...
+# Only compatible with unix/linux based operating systems
 # 
 # make objects - compile all c files to objects
 # make exe - compile all objects to an executable
@@ -16,10 +16,10 @@ CC = gcc
 OUTPUT = rtree
 
 objects:
-	$(CC) -c $(FILES)
+	$(CC) -g -c $(FILES)			# -g for debugging
 
 exe:
-	$(CC) $(CFLAGS) $(OBJECTS) -o $(OUTPUT)
+	$(CC) -g $(CFLAGS) $(OBJECTS) -o $(OUTPUT)
 
 clean:
 	rm $(OBJECTS)

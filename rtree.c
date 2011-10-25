@@ -23,7 +23,7 @@
 #include <math.h>
 #include "point.h"
 
-static int maxsdev = 4; /* Maximum standard deviation within each rtree */
+static int maxsdev = 10; /* Maximum standard deviation within each rtree */
 
 typedef struct rtree{
 	int n;/* Number of points in the section of a tree */
@@ -80,7 +80,7 @@ rtree* putrt(rtree * tree, point * p){
 			tree->n++;
 			tree->points = (point*)realloc(tree->points, sizeof(point) * tree->n);
 			tree->points[tree->n - 1] = *p;
-			subrt(tree); /* subdivides the rtree (remember that subrt() checks if the node meets criteria before subdividing)
+			subrt(tree); /* subdivides the rtree (remember that subrt() checks if the node meets criteria before subdividing) */
 		} else {
 			/* Select the subtree that can contain the point with the least expansion, or
 			 * if both require the same expansion, add to the first.
@@ -89,6 +89,8 @@ rtree* putrt(rtree * tree, point * p){
 			double rszsub2 = rszsum(tree->sub2, p);
 			putrt(rszsub1 >= rszsub2 ? tree->sub1 : tree->sub2, p);
 		}
+	} else {
+	  printf("[Error]: putrt() passed a null point pointer");
 	}
 }
 
@@ -188,43 +190,48 @@ int subrt(rtree* tree){
 	double sum1;
 	double sum2;
 
-	max = (point*)malloc(sizeof(point));
-	min = (point*)malloc(sizeof(point));
-	sdev = sdevrt(tree, max, min);
-	printf("max z: %f\nmin z: %f\n", max->z, min->z);
-	if (sdev > maxsdev){
-		tree->leaf = 0;
-		tree->sub1 = (rtree*)malloc(sizeof(rtree));
-		tree->sub2 = (rtree*)malloc(sizeof(rtree));
-		/* 
-		 * Create new subtrees, starting with the lowest and highest z values possible.
-		 * Sub1 starts with the highest point, sub2 with the lowest.
-		 */
-		setxyz(&tree->sub1->p1, max->x, max->y, max->z);
-		setxyz(&tree->sub1->p2, max->x, max->y, max->z);
-		setxyz(&tree->sub2->p1, min->x, min->y, min->z);
-		setxyz(&tree->sub2->p2, min->x, min->y, min->z);
-		for (i = 0; i < tree->n; i++){
+	if (tree->leaf){
+		max = (point*)malloc(sizeof(point));
+		min = (point*)malloc(sizeof(point));
+		sdev = sdevrt(tree, max, min);
+		
+		/*	printf("max z: %f\nmin z: %f\n", max->z, min->z); */
+		
+		if (sdev > maxsdev){
+			tree->leaf = 0;
+			tree->sub1 = (rtree*)malloc(sizeof(rtree));
+			tree->sub2 = (rtree*)malloc(sizeof(rtree));
 			/* 
-			 * putrt(tree, &tree->points[i]);
-			 *
-			 * Use this once putrt is fully written
+			 * Create new subtrees, starting with the lowest and highest z values possible.
+			 * Sub1 starts with the highest point, sub2 with the lowest.
 			 */
-			//		printf("Z - %f\n", tree->points[i].z);
-			sum1 = rszsum(tree->sub1, &tree->points[i]);
-			sum2 = rszsum(tree->sub2, &tree->points[i]);
-			if (sum2 > sum1){
-				putrt(tree->sub1, &tree->points[i]);
-			} else {
-				putrt(tree->sub2, &tree->points[i]);
+			setxyz(&tree->sub1->p1, max->x, max->y, max->z);
+			setxyz(&tree->sub1->p2, max->x, max->y, max->z);
+			setxyz(&tree->sub2->p1, min->x, min->y, min->z);
+			setxyz(&tree->sub2->p2, min->x, min->y, min->z);
+			for (i = 0; i < tree->n; i++){
+				
+				putrt(tree, &tree->points[i]);
+				/*			sum1 = rszsum(tree->sub1, &tree->points[i]);
+							sum2 = rszsum(tree->sub2, &tree->points[i]);
+							if (sum2 > sum1){
+							putrt(tree->sub1, &tree->points[i]);
+							} else {
+							putrt(tree->sub2, &tree->points[i]);
+							}*/
 			}
-		}
-		/* Free any unneeded memory in the subtrees, then free the original point array */
-		free(tree->points);
-		tree->points = NULL;
-		tree->n = 0;
-		return 1;
-	}	
+			/* Free any unneeded memory in the subtrees, then free the original point array */
+			free(tree->points);
+			tree->points = NULL;
+			tree->n = 0;
+			subrt(tree->sub1);
+			subrt(tree->sub2);
+			return 1;
+		}	
+	} else {
+		subrt(tree->sub1);
+		subrt(tree->sub2);
+	}
 	return 0;
 }
 
