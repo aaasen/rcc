@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "point.h"
-#include "rect.h"
+//#include "rect.h"
 
 typedef struct rtree{
 	int n;/* Number of points in the section of a tree */
@@ -58,5 +58,7 @@ int subrt(rtree * tree);/* Subdivide the selected rtree if a leaf and if meets s
 int resizert(rtree * tree);/* Recursively resize the tree, return false if rebuilding might be necessary */
 
 void rebuildrt(rtree * tree);/* Recursively rebuild the entire tree, optimizing search time */
+
+rtree* pfindrt(rtree * tree, point * p);/* Recursively search through the rtree to find the rtree containing the specified point. Return null if the point is not in the tree. Assumes the rtree is properly resized */
 
 #endif

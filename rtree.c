@@ -21,10 +21,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include "point.h"
-#include "rect.h"
+//#include "rect.h"
 
-static int maxsdev = 10; /* Maximum standard deviation within each rtree */
+static int maxsdev = 30; /* Maximum standard deviation within each rtree */
 
 typedef struct rtree{
 	int n;/* Number of points in the section of a tree */
@@ -65,7 +66,6 @@ rtree* putrt(rtree * tree, point * p){
 			tree->n++;
 			tree->points = (point*)realloc(tree->points, sizeof(point) * tree->n);
 			tree->points[tree->n - 1] = *p;
-			subrt(tree); /* subdivides the rtree (remember that subrt() checks if the node meets criteria before subdividing) */
 		} else {
 			/* Select the subtree that can contain the point with the least expansion, or
 			 * if both require the same expansion, add to the first.
@@ -76,7 +76,7 @@ rtree* putrt(rtree * tree, point * p){
 			putrt(rszsub1 >= rszsub2 ? tree->sub1 : tree->sub2, p);
 		}
 	} else {
-	  printf("[Error]: putrt() passed a null point pointer");
+	  fprintf("[Error]: putrt() passed a null point pointer");
 	}
 }
 
@@ -85,11 +85,13 @@ void bputrt(rtree* tree, point* p, int n) {
 	int i;
 
 	tree->points = (point*)realloc(tree->points, n + tree->n);
-	for (i = 0; i < n; i ++){
+	memcpy(p, &tree->points[tree->n], n * sizeof(point));
+	/* for (i = 0; i < n; i ++){	   		/* TODO: Should use memmove
 		tree->points[i + tree->n] = p[i];
-	}
+	} */
 	tree->n += n;
 	subrt(tree);
+	resizert(tree);
 }
 
 /* Recursively find and remove the point from the tree */
@@ -212,4 +214,38 @@ int resizert(rtree * tree){
 /* Recursively rebuild the entire tree, optimizing search time */
 void rebuildrt(rtree * tree) {
 
+}
+
+/*
+ * SINGLE POINT SEARCH
+ * Recursively search through the rtree to find the rtree containing the
+ * specified point. Return null if the point is not in the tree.
+ * Assumes the rtree is properly resized.
+ */
+rtree* pfindrt(rtree* tree, point * p){
+	int i;
+	rtree* tree1, tree2;
+
+	if (tree && p){
+		if (tree->leaf){
+			for (i = 0; i < tree.n; i++){
+				if (peq(&tree->points[i], p)){
+					return tree;
+				}
+			}
+		} else {
+			tree1 = pfindrt(tree->sub1, p);
+			if (tree1){
+				return tree1;
+			}
+			tree2 = pfindrt(tree->sub2, p);
+			if (tree2){
+				return tree2;
+			}
+
+		}
+	} else {
+		fprintf("[Error]: pfindrt sent a null pointer");
+	}
+	return NULL;/* Returned if error occurs, or if point is not found */
 }
