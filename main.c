@@ -17,14 +17,5 @@ int main(void){
 	printf("Standard Deviation sub1: %f\n", sdevrt(rt->sub1, NULL, NULL));
 	printf("Standard Deviation sub2: %f\n", sdevrt(rt->sub2, NULL, NULL));
 	
-	printf("init debug\n");
-	point* p1 = (point*)malloc(sizeof(point));
-	printf("pre xyz 1 debug\n");
-	setxyz(p1, 0, 0, 0);
-	point* p2 = (point*)malloc(sizeof(point));
-	printf("pre xyz 2 debug\n");
-	setxyz(p2, 1, 0, 0);
-	printf("pre peq debug\n");
-	printf("p1 and p2 are %s\n", peq(p1, p2) ? "equal" : "inequal");
 	return 0;
 }
