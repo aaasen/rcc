@@ -222,29 +222,29 @@ void rebuildrt(rtree * tree) {
  * specified point. Return null if the point is not in the tree.
  * Assumes the rtree is properly resized.
  */
-rtree* pfindrt(rtree* tree, point * p){
-	int i;
-	rtree* tree1, tree2;
+/*rtree* pfindrt(rtree* tree, point * p){*/
+/*	int i;*/
+/*	rtree* tree1, tree2;*/
 
-	if (tree && p){
-		if (tree->leaf){
-			for (i = 0; i < tree->n; i++){
-				if (peq(&tree->points[i], p)){
-					return tree;
-				}
-			}
-		} else {
-			tree1 = pfindrt(tree->sub1, p);
-			if (tree1){
-				return tree1;
-			}
-			tree2 = pfindrt(tree->sub2, p);
-			if (tree2){
-				return tree2;
-			}
-		}
-	} else {
-		perror("[Error]: pfindrt sent a null pointer");
-	}
-	return NULL;/* Returned if error occurs, or if point is not found */
-}
+/*	if (tree && p){*/
+/*		if (tree->leaf){*/
+/*			for (i = 0; i < tree->n; i++){*/
+/*				if (peq(&tree->points[i], p)){*/
+/*					return tree;*/
+/*				}*/
+/*			}*/
+/*		} else {*/
+/*			tree1 = pfindrt(tree->sub1, p);*/
+/*			if (tree1){*/
+/*				return tree1;*/
+/*			}*/
+/*			tree2 = pfindrt(tree->sub2, p);*/
+/*			if (tree2){*/
+/*				return tree2;*/
+/*			}*/
+/*		}*/
+/*	} else {*/
+/*		perror("[Error]: pfindrt sent a null pointer");*/
+/*	}*/
+/*	return NULL;/* Returned if error occurs, or if point is not found */
+/*}*/

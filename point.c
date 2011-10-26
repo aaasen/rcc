@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
 
 typedef struct point{
@@ -10,6 +11,9 @@ int peq(point* p1, point* p2);
 
 /* Give the point the specified x, y, z */
 void setxyz(point* p, double x, double y, double z){
+	if(p == NULL) {
+		printf("NULL POINTER\n");
+	}
 	p->x = x;
 	p->y = y;
 	p->z = z;

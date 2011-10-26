@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "point.h"
-//#include "rect.h"
+#include "rect.h"
 
 typedef struct rtree{
 	int n;/* Number of points in the section of a tree */
