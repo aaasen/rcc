@@ -61,8 +61,6 @@ rtree* putrt(rtree * tree, point * p){
 	}
 	if (p != NULL){
 		if (tree->leaf){
-			//TODO Add point to points
-			//Realloc as necessary
 			tree->n++;
 			tree->points = (point*)realloc(tree->points, sizeof(point) * tree->n);
 			tree->points[tree->n - 1] = *p;
@@ -95,16 +93,25 @@ void bputrt(rtree* tree, point* p, int n) {
 }
 
 /* Recursively find and remove the point from the tree */
+/* does not resize or delete the node after deletion */
 rtree* remrt(rtree* tree, point * p){
-/*	if (tree->leaf){*/
-/*		int i; for(i = 0; i < tree->n; i++) {*/
-/*			if(peq(p, tree->points[i])) {*/
-/*				//remove point, realloc	*/
-/*			}*/
-/*		}*/
-/*	} else {*/
-/*		*/
-/*	}*/
+	if (tree->sub1 == NULL && tree->sub2 == NULL){
+		tree->leaf = 1;
+	}
+	if (p != NULL) {
+		if (tree->leaf){
+			int i; for(i = 0; i < tree->n; i++) {
+				if(peq(p, &tree->points[i])) {
+					memmove(&tree->points[i], &tree->points[tree->n-1], sizeof(point));
+					tree->n--;
+					tree->points = realloc(tree->points, sizeof(point) * tree->n);
+				}
+			}
+		} else {
+			remrt(tree->sub1, p);
+			remrt(tree->sub2, p);
+		}
+	}
 }
 
 /*
