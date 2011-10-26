@@ -10,12 +10,12 @@ int main(void){
 	rt->points[1].z = 0;
 	rt->points[0].z = 100;
 	rt->points[2].z = 10;
-	rt->points[3].z = 99;
-/*	subrt(rt);*/
-/*	printf("Standard Deviation: %f\n", sdevrt(rt, NULL, NULL));*/
-/*	printf("n1: %d\nn2: %d\n", rt->sub1->n, rt->sub2->n);*/
-/*	printf("Standard Deviation sub1: %f\n", sdevrt(rt->sub1, NULL, NULL));*/
-/*	printf("Standard Deviation sub2: %f\n", sdevrt(rt->sub2, NULL, NULL));*/
+	rt->points[3].z = 70;
+	subrt(rt);
+	printf("Standard Deviation: %f\n", sdevrt(rt, NULL, NULL));
+	printf("n1: %d\nn2: %d\n", rt->sub1->n, rt->sub2->n);
+	printf("Standard Deviation sub1: %f\n", sdevrt(rt->sub1, NULL, NULL));
+	printf("Standard Deviation sub2: %f\n", sdevrt(rt->sub2, NULL, NULL));
 	
 	return 0;
 }

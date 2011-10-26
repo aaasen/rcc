@@ -34,7 +34,7 @@ typedef struct rtree{
 	 * Should points be used to represent the corners?
 	 */
 
-	rect* mbr; /* Maximum Bounding Rectangle of the node */
+	rect mbr; /* Maximum Bounding Rectangle of the node */
 
 	int leaf;/* True if this tree is a leaf, false if a branch */
 	/* Possibly make into an n-child rtree, if faster */
@@ -69,8 +69,8 @@ rtree* putrt(rtree * tree, point * p){
 			 * if both require the same expansion, add to the first.
 			 */
 			 
-			double rszsub1 = rszsum(tree->sub1->mbr, p);
-			double rszsub2 = rszsum(tree->sub2->mbr, p);
+			double rszsub1 = rszsum(&tree->sub1->mbr, p);
+			double rszsub2 = rszsum(&tree->sub2->mbr, p);
 			putrt(rszsub1 >= rszsub2 ? tree->sub1 : tree->sub2, p);
 		}
 	} else {
@@ -183,10 +183,14 @@ int subrt(rtree* tree){
 			 * Create new subtrees, starting with the lowest and highest z values possible.
 			 * Sub1 starts with the highest point, sub2 with the lowest.
 			 */
-			setxyz(&tree->sub1->mbr->p1, max->x, max->y, max->z);
-			setxyz(&tree->sub1->mbr->p2, max->x, max->y, max->z);
-			setxyz(&tree->sub2->mbr->p1, min->x, min->y, min->z);
-			setxyz(&tree->sub2->mbr->p2, min->x, min->y, min->z);
+			if (max){
+				setxyz(&tree->sub1->mbr.p1, max->x, max->y, max->z);
+				setxyz(&tree->sub1->mbr.p2, max->x, max->y, max->z);
+			}
+			if (min){
+				setxyz(&tree->sub2->mbr.p1, min->x, min->y, min->z);
+				setxyz(&tree->sub2->mbr.p2, min->x, min->y, min->z);
+			}
 			for (i = 0; i < tree->n; i++){
 
 				putrt(tree, &tree->points[i]);

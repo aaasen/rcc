@@ -37,7 +37,7 @@ typedef struct rtree{
 	 * Should points be used to represent the corners?
 	 */
 
-	rect* mbr; /* Maximum Bounding Rectangle of the node */
+	rect mbr; /* Maximum Bounding Rectangle of the node */
 
 	int leaf;/* True if this tree is a leaf, false if a branch */
 	/* Possibly make into an n-child rtree, if faster */
