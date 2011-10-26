@@ -23,7 +23,7 @@
 #include <math.h>
 #include <string.h>
 #include "point.h"
-//#include "rect.h"
+#include "rect.h"
 
 static int maxsdev = 30; /* Maximum standard deviation within each rtree */
 
@@ -76,7 +76,7 @@ rtree* putrt(rtree * tree, point * p){
 			putrt(rszsub1 >= rszsub2 ? tree->sub1 : tree->sub2, p);
 		}
 	} else {
-	  fprintf("[Error]: putrt() passed a null point pointer");
+	  perror("[Error]: putrt() passed a null point pointer");
 	}
 }
 
@@ -228,7 +228,7 @@ rtree* pfindrt(rtree* tree, point * p){
 
 	if (tree && p){
 		if (tree->leaf){
-			for (i = 0; i < tree.n; i++){
+			for (i = 0; i < tree->n; i++){
 				if (peq(&tree->points[i], p)){
 					return tree;
 				}
@@ -242,10 +242,9 @@ rtree* pfindrt(rtree* tree, point * p){
 			if (tree2){
 				return tree2;
 			}
-
 		}
 	} else {
-		fprintf("[Error]: pfindrt sent a null pointer");
+		perror("[Error]: pfindrt sent a null pointer");
 	}
 	return NULL;/* Returned if error occurs, or if point is not found */
 }
