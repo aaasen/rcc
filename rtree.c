@@ -49,6 +49,8 @@ double sdevrt(rtree * tree, point * max, point * min);
 int subrt(rtree * tree);
 int resizert(rtree * tree);
 void rebuildrt(rtree * tree);
+rtree* pfindrt(rtree* tree, point * p);
+point* psinrrt(rtree* tree, rect* qbox)
 
 /* Add the specified point to the specified rtree
  * Can not resize the rtree, only expand it. e.g. a large prism has been predefined
