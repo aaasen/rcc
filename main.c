@@ -29,6 +29,7 @@ int main(int argc, char *argv[]) {
 	} else {
 		printf("Did not find point with z = %.2f in the tree.\n", p->z);
 	}
+	
 	rect* r1 = malloc(sizeof(rect));
 	/* point* r1p1 = malloc(sizeof(point)); */
 	/* point* r1p2 = malloc(sizeof(point)); */
@@ -62,6 +63,13 @@ int main(int argc, char *argv[]) {
 	/* r2->p2 = *r2p2; */
 	
 	printf("rinr: %d\n", rinr(r1, r2));
+	
+	free(points);
+	free(rt);
+	free(p);
+	free(p1);
+	free(r1);
+	free(r2);
 	
 	return 0;
 }
