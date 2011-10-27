@@ -7,6 +7,7 @@
 # make clean - remove all object files
 # make all - compile objects, make executable, clean directory
 # make run - do full compile and clean, then run
+# make leak - make all and then run a full valgrind leak check on the output
 
 CFLAGS = -Wall -lm
 FILES = main.c rtree.c point.c rect.c

@@ -279,22 +279,43 @@ rtree* pfindrt(rtree* tree, point * p){
 /* returns an array of points which are in the query box */
 point* psinrrt(rtree* tree, rect* qbox) {
 	int i;
+	int numpin = 0;
 	if (tree->sub1 == NULL && tree->sub2 == NULL){
 		tree->leaf = 1;
 	}
-	if (tree != NULL && qbox != NULL) {
-		//make array of points in qbox
+	if (tree && qbox) {
 		if(tree->leaf) {
+			point* buf = malloc(sizeof(point) * tree->n + 1);
 			for(i = 0; i < tree->n; i++) {
 				if(pinr(qbox, &tree->points[i])) {
+					buf[++numpin] = tree->points[i];
 					//add tree->points[i] to an array of points in the qbox
 				}
 			}
+			point* p1 = malloc(sizeof(point));
+			numpin++;
+			setxyz(p1, numpin, -1, -1);
+			buf[0] = *p1;
+			buf = realloc(buf, numpin);
+			return buf;
 		} else {
+			int sub1length, sub2length;
+			point* sub1buf;
+			point* sub2buf;
 			if(rinr(&tree->sub1->mbr, qbox)) {
+				point* sub1buf = psinrrt(tree->sub1, qbox);
+				sub1length = sub1buf[0].x;
+				
 				//add the result of psinrrt(tree->sub1, qbox); to an array of points in the qbox
 			}
+			if(rinr(&tree->sub2->mbr, qbox)) {
+				point* sub2buf = psinrrt(tree->sub2, qbox);
+				sub2length = sub2buf[0].x;
 			//repeat above for second subtree
+			}
+			point* sumbuf = malloc((sub1length + sub2length - 2) * sizeof(point));
+			memcpy(sumbuf, &sub1buf[1], sizeof(point) * (sub1length-1));
+			memcpy(&sumbuf[sub1length-1], &sub2buf[1], sizeof(point) * (sub2length-1));
 		}
 		//return array of points in qbox
 	}
