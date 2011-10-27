@@ -153,8 +153,10 @@ double sdevrt(rtree * tree, point * max, point * min){
 			minp = &(tree->points[i]);
 		}
 	}
-	if (!(max == NULL || min == NULL)){
+	if (max && min){
 		/* Transfer x,y,z for max and min points */
+		/* free(max); */
+		/* free(min); */
 		setxyz(max, maxp->x, maxp->y, maxp->z);
 		setxyz(min, minp->x, minp->y, minp->z);
 	}
@@ -163,8 +165,6 @@ double sdevrt(rtree * tree, point * max, point * min){
 	for (i = 0; i < tree->n; i++){
 	  sumsqr += pow(tree->points[i].z - mean, 2);
 	}
-	free(maxp);
-	free(minp);
 	return sqrt(sumsqr / (tree->n - 1));
 }
 
@@ -320,4 +320,15 @@ point* psinrrt(rtree* tree, rect* qbox) {
 		//return array of points in qbox
 	}
 	return NULL; //if the program flow reaches here the tree or qbox is null 
+}
+
+/* Recursively free the rtree and all of its nodes */
+void freert(rtree* tree){
+	if (tree->leaf){
+		free(tree->points);
+	} else {
+	  freert(tree->sub1);
+	  freert(tree->sub2);
+	}
+	free(tree);
 }

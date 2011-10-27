@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
 	printf("rinr: %d\n", rinr(r1, r2));
 	
 	free(points);
-	free(rt);
+	freert(rt);
 	free(p);
 	free(p1);
 	free(r1);

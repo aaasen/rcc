@@ -63,4 +63,6 @@ rtree* pfindrt(rtree * tree, point * p);/* Recursively search through the rtree 
 
 point* psinrrt(rtree* tree, rect* qbox); /* returns an array of points which are in the query box */
 
+void freert(rtree* tree); /* Recursively free the rtree and all of its nodes */
+
 #endif

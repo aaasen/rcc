@@ -33,8 +33,7 @@ all:
 run:
 	make all
 	./$(OUTPUT)
-	
+
 leak:
 	make all
 	valgrind --leak-check=full ./$(OUTPUT)
-	
