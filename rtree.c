@@ -78,18 +78,27 @@ rtree* putrt(rtree * tree, point * p){
 	}
 }
 
-/* Efficiently bulk add all of the points in p */
+/* 
+ * Efficiently bulk add all of the points in p.
+ * Fails if tree is not a leaf.
+ */
 void bputrt(rtree* tree, point* p, int n) {
 	int i;
+	
+	if (tree->leaf){
+		tree->points = (point*)realloc(tree->points, (n + tree->n)*sizeof(point));
+		memcpy(&tree->points[tree->n], p, n * sizeof(point));
+		for (i = 0; i < n; i ++){
+			printf("%.2f\n - %.2f\n", tree->points[i].z, p[i].z);
+		}
+		tree->n += n;
+		printf("%d points in tree\n", tree->n);
+		subrt(tree);
+		resizert(tree);
+	} else {
+	  perror("Warning: Did not insert points into non-leaf rtree");
+	}
 
-	tree->points = (point*)realloc(tree->points, n + tree->n);
-	memcpy(p, &tree->points[tree->n], n * sizeof(point));
-	/* for (i = 0; i < n; i ++){	   		/* TODO: Should use memmove
-		tree->points[i + tree->n] = p[i];
-	} */
-	tree->n += n;
-	subrt(tree);
-	resizert(tree);
 }
 
 /* Recursively find and remove the point from the tree */
@@ -172,7 +181,6 @@ int subrt(rtree* tree){
 		max = (point*)malloc(sizeof(point));
 		min = (point*)malloc(sizeof(point));
 		sdev = sdevrt(tree, max, min);
-
 		/*	printf("max z: %f\nmin z: %f\n", max->z, min->z); */
 
 		if (sdev > maxsdev){
@@ -233,29 +241,30 @@ void rebuildrt(rtree * tree) {
  * specified point. Return null if the point is not in the tree.
  * Assumes the rtree is properly resized.
  */
-/*rtree* pfindrt(rtree* tree, point * p){*/
-/*	int i;*/
-/*	rtree* tree1, tree2;*/
+rtree* pfindrt(rtree* tree, point * p){
+	int i;
+	rtree* tree1;
+	rtree* tree2;
 
-/*	if (tree && p){*/
-/*		if (tree->leaf){*/
-/*			for (i = 0; i < tree->n; i++){*/
-/*				if (peq(&tree->points[i], p)){*/
-/*					return tree;*/
-/*				}*/
-/*			}*/
-/*		} else {*/
-/*			tree1 = pfindrt(tree->sub1, p);*/
-/*			if (tree1){*/
-/*				return tree1;*/
-/*			}*/
-/*			tree2 = pfindrt(tree->sub2, p);*/
-/*			if (tree2){*/
-/*				return tree2;*/
-/*			}*/
-/*		}*/
-/*	} else {*/
-/*		perror("[Error]: pfindrt sent a null pointer");*/
-/*	}*/
-/*	return NULL;/* Returned if error occurs, or if point is not found */
-/*}*/
+	if (tree && p){
+		if (tree->leaf){
+			for (i = 0; i < tree->n; i++){
+				if (peq(&tree->points[i], p)){
+					return tree;
+				}
+			}
+		} else {
+			tree1 = pfindrt(tree->sub1, p);
+			if (tree1){
+				return tree1;
+			}
+			tree2 = pfindrt(tree->sub2, p);
+			if (tree2){
+				return tree2;
+			}
+		}
+	} else {
+		perror("[Error]: pfindrt sent a null pointer");
+	}
+	return NULL;/* Returned if error occurs, or if point is not found */
+}

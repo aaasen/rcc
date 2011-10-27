@@ -6,20 +6,29 @@ int main(int argc, char *argv[]) {
 	int i; for(i = 0; i < argc; i++) {
 		printf("argument at [%d]: %s\n", i, argv[i]);
 	}
+  	point* points = (point*)malloc(sizeof(point) * 4);
 	rtree* rt = (rtree*)malloc(sizeof(rtree));
-	rt->points = (point*)malloc(sizeof(point) * 4);
 	rt->leaf = 1;
-	rt->n = 4;
-	rt->points[1].z = 0;
-	rt->points[0].z = 100;
-	rt->points[2].z = 10;
-	rt->points[3].z = 70;
+	points[1].z = 1;
+	points[0].z = 100;
+	points[2].z = 60;
+	points[3].z = 70;
+	printf("First Point's z: %.2f\n", points[0].z);
+	bputrt(rt, points, 4);
 	subrt(rt);
 	printf("Standard Deviation: %f\n", sdevrt(rt, NULL, NULL));
-	printf("n1: %d\nn2: %d\n", rt->sub1->n, rt->sub2->n);
-	printf("Standard Deviation sub1: %f\n", sdevrt(rt->sub1, NULL, NULL));
-	printf("Standard Deviation sub2: %f\n", sdevrt(rt->sub2, NULL, NULL));
-	
+	if (rt->sub1){
+		printf("n1: %d\nn2: %d\n", rt->sub1->n, rt->sub2->n);
+		printf("Standard Deviation sub1: %f\n", sdevrt(rt->sub1, NULL, NULL));
+		printf("Standard Deviation sub2: %f\n", sdevrt(rt->sub2, NULL, NULL));
+	}
+	point* p = (point*)malloc(sizeof(point));
+	rtree* stree = pfindrt(rt, p);
+	if (stree){
+		printf("Found point with z = %.2f in an rtree containing %d points.\n", p->z, stree->n);
+	} else {
+		printf("Did not find point with z = %.2f in the tree.\n", p->z);
+	}
 	rect* r1 = malloc(sizeof(rect));
 	point* r1p1 = malloc(sizeof(point));
 	point* r1p2 = malloc(sizeof(point));
