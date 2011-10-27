@@ -20,6 +20,7 @@ double getdr(rect* box);
 double rszaxis(double center, double width, double point);
 double rszsum(rect* box, point* p);
 int pinr(rect* box, point* p);
+int rinr(rect* box1, rect* box2);
 
 /* get the width, height and depth of the rectangle, respectively */
 double getwr(rect* box) {
@@ -55,7 +56,14 @@ double rszsum(rect* box, point* p) {
 
 /* returns true if the point is inside the rectangle and false (0) if not */
 int pinr(rect* box, point* p) {
-	return ((box->p1.x <= p->x) &&  (p->x <= box->p2.x) &&
-			(box->p1.y >= p->y) &&  (p->y >= box->p2.y) &&
-			(box->p1.z <= p->z) &&  (p->z <= box->p2.z)) ? 1 : 0;
+	return ((pinrng(box->p1.x, box->p2.x, p->x, 1)) &&
+			(pinrng(box->p2.y, box->p1.y, p->y, 1)) &&
+			(pinrng(box->p1.z, box->p2.z, p->z, 1))) ? 1 : 0;
+}
+
+/* evaluates whether or not two rectangles overlap and returns true if they do and false if not */
+int rinr(rect* box1, rect* box2) {
+	return ((pinrng(box1->p1.x, box1->p2.x, box2->p1.x, 1) || pinrng(box1->p1.x, box1->p2.x, box2->p2.x, 1)) &&
+			(pinrng(box1->p2.y, box1->p1.y, box2->p1.y, 1) || pinrng(box1->p2.y, box1->p1.y, box2->p2.y, 1)) &&
+			(pinrng(box1->p1.z, box1->p2.z, box2->p1.z, 1) || pinrng(box1->p1.z, box1->p2.z, box2->p2.z, 1))) ? 1 : 0;
 }

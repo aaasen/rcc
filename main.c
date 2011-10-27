@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 	
 	point* p1 = malloc(sizeof(point));
 	//inside
-	setxyz(p1, 0, 0, 0);
+/*	setxyz(p1, 0, 0, 0);*/
 /*	setxyz(p1, .5, .5, .5);*/
 /*	setxyz(p1, 1, 1, 1);*/
 	//outside
@@ -49,8 +49,19 @@ int main(int argc, char *argv[]) {
 /*	setxyz(p1, 100, 0, 0);*/
 /*	setxyz(p1, 0, 100, 0);*/
 /*	setxyz(p1, 0, 0, 100);*/
-	
 	printf("pinr: %d\n", pinr(r1, p1));
+	
+	printf("pinrng: %d\n", pinrng(10, 20, 50, 1));
+	
+	rect* r2 = malloc(sizeof(rect));
+	point* r2p1 = malloc(sizeof(point));
+	point* r2p2 = malloc(sizeof(point));
+	setxyz(r2p1, 5, 6, 5);
+	setxyz(r2p2, 6, 5, 6);
+	r2->p1 = *r2p1;
+	r2->p2 = *r2p2;
+	
+	printf("rinr: %d\n", rinr(r1, r2));
 	
 	return 0;
 }

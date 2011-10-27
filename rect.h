@@ -31,4 +31,7 @@ double rszsum(rect* box, point* p);
 /* returns true if the point is inside the rectangle and false (0) if not */
 int pinr(rect* box, point* p);
 
+/* evaluates whether or not two rectangles overlap and returns true if they do and false if not */
+int rinr(rect* box1, rect* box2);
+
 #endif
