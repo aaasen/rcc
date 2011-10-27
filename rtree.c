@@ -50,7 +50,7 @@ int subrt(rtree * tree);
 int resizert(rtree * tree);
 void rebuildrt(rtree * tree);
 rtree* pfindrt(rtree* tree, point * p);
-point* psinrrt(rtree* tree, rect* qbox)
+point* psinrrt(rtree* tree, rect* qbox);
 
 /* Add the specified point to the specified rtree
  * Can not resize the rtree, only expand it. e.g. a large prism has been predefined
@@ -280,7 +280,7 @@ point* psinrrt(rtree* tree, rect* qbox) {
 		//make array of points in qbox
 		if(tree->leaf) {
 			for(i = 0; i < tree->n; i++) {
-				if(pinr(qbox, tree->points[i])) {
+				if(pinr(qbox, &tree->points[i])) {
 					//add tree->points[i] to an array of points in the qbox
 				}
 			}
