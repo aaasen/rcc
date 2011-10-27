@@ -267,3 +267,28 @@ rtree* pfindrt(rtree* tree, point * p){
 	}
 	return NULL;/* Returned if error occurs, or if point is not found */
 }
+
+/* returns an array of points which are in the query box */
+point* psinrrt(rtree* tree, rect* qbox) {
+	int i;
+	if (tree->sub1 == NULL && tree->sub2 == NULL){
+		tree->leaf = 1;
+	}
+	if (tree != NULL && qbox != NULL) {
+		//make array of points in qbox
+		if(tree->leaf) {
+			for(i = 0; i < tree->n; i++) {
+				if(pinr(qbox, tree->points[i])) {
+					//add tree->points[i] to an array of points in the qbox
+				}
+			}
+		} else {
+			if(rinr(&tree->sub1->mbr, qbox)) {
+				//add the result of psinrrt(tree->sub1, qbox); to an array of points in the qbox
+			}
+			//repeat above for second subtree
+		}
+		//return array of points in qbox
+	}
+	return NULL; //if the program flow reaches here the tree or qbox is null 
+}
