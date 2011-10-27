@@ -23,6 +23,7 @@ int main(int argc, char *argv[]) {
 		printf("Standard Deviation sub2: %f\n", sdevrt(rt->sub2, NULL, NULL));
 	}
 	point* p = (point*)malloc(sizeof(point));
+	setxyz(p, 0, 0, 60);
 	rtree* stree = pfindrt(rt, p);
 	if (stree){
 		printf("Found point with z = %.2f in an rtree containing %d points.\n", p->z, stree->n);

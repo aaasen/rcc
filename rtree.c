@@ -163,6 +163,8 @@ double sdevrt(rtree * tree, point * max, point * min){
 	for (i = 0; i < tree->n; i++){
 	  sumsqr += pow(tree->points[i].z - mean, 2);
 	}
+	free(maxp);
+	free(minp);
 	return sqrt(sumsqr / (tree->n - 1));
 }
 
@@ -217,8 +219,12 @@ int subrt(rtree* tree){
 			tree->n = 0;
 			subrt(tree->sub1);
 			subrt(tree->sub2);
+			free(max);
+			free(min);
 			return 1;
 		}
+		free(max);
+		free(min);
 	} else {
 		subrt(tree->sub1);
 		subrt(tree->sub2);
