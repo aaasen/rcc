@@ -30,12 +30,12 @@ int main(int argc, char *argv[]) {
 		printf("Did not find point with z = %.2f in the tree.\n", p->z);
 	}
 	rect* r1 = malloc(sizeof(rect));
-	point* r1p1 = malloc(sizeof(point));
-	point* r1p2 = malloc(sizeof(point));
-	setxyz(r1p1, 0, 1, 0);
-	setxyz(r1p2, 1, 0, 1);
-	r1->p1 = *r1p1;
-	r1->p2 = *r1p2;
+	/* point* r1p1 = malloc(sizeof(point)); */
+	/* point* r1p2 = malloc(sizeof(point)); */
+	setxyz(&r1->p1, 0, 1, 0);
+	setxyz(&r1->p2, 1, 0, 1);
+	/* r1->p1 = *r1p1; */
+	/* r1->p2 = *r1p2; */
 	
 	point* p1 = malloc(sizeof(point));
 	//inside
@@ -54,12 +54,12 @@ int main(int argc, char *argv[]) {
 	printf("pinrng: %d\n", pinrng(10, 20, 50, 1));
 	
 	rect* r2 = malloc(sizeof(rect));
-	point* r2p1 = malloc(sizeof(point));
-	point* r2p2 = malloc(sizeof(point));
-	setxyz(r2p1, 5, 6, 5);
-	setxyz(r2p2, 6, 5, 6);
-	r2->p1 = *r2p1;
-	r2->p2 = *r2p2;
+	/* point* r2p1 = malloc(sizeof(point)); */
+	/* point* r2p2 = malloc(sizeof(point)); */
+	setxyz(&r2->p2, -1, -1, -1);
+	setxyz(&r2->p1, 3, 3, 3);
+	/* r2->p1 = *r2p1; */
+	/* r2->p2 = *r2p2; */
 	
 	printf("rinr: %d\n", rinr(r1, r2));
 	

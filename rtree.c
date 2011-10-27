@@ -98,7 +98,6 @@ void bputrt(rtree* tree, point* p, int n) {
 	} else {
 	  perror("Warning: Did not insert points into non-leaf rtree");
 	}
-
 }
 
 /* Recursively find and remove the point from the tree */
