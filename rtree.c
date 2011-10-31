@@ -90,9 +90,6 @@ void bputrt(rtree* tree, point* p, int n) {
 	if (tree->leaf){
 		tree->points = (point*)realloc(tree->points, (n + tree->n)*sizeof(point));
 		memcpy(&tree->points[tree->n], p, n * sizeof(point));
-		for (i = 0; i < n; i ++){
-			printf("%.2f\n - %.2f\n", tree->points[i].z, p[i].z);
-		}
 		tree->n += n;
 		printf("%d points in tree\n", tree->n);
 		subrt(tree);
