@@ -1,8 +1,8 @@
 /*
  * A basic rectanglular prism.
- * p1 is treated as the closer upper left point and
- * p2 is treated as the further lower right point where
- * the origin is at the close bottom left.
+ * p1 is treated as the closer lower left point (lower values)and
+ * p2 is treated as the further upper right point (higher values) 
+ * where the origin is at the close bottom left.
  */
 
 #include <stdlib.h>
@@ -24,15 +24,15 @@ int rinr(rect* box1, rect* box2);
 
 /* get the width, height and depth of the rectangle, respectively */
 double getwr(rect* box) {
-	return fabs(box->p1.x - box->p2.x);
+	return box->p2.x - box->p1.x;
 }
 
 double gethr(rect* box) {
-	return fabs(box->p1.y - box->p2.y);
+	return box->p2.y - box->p1.y;
 }
 
 double getdr(rect* box) {
-	return fabs(box->p1.z - box->p2.z);
+	return box->p2.z - box->p1.z;
 }
 
 /* returns the amount that the node has to be resized by on one axis */
@@ -57,13 +57,13 @@ double rszsum(rect* box, point* p) {
 /* returns true if the point is inside the rectangle and false (0) if not */
 int pinr(rect* box, point* p) {
 	return ((pinrng(box->p1.x, box->p2.x, p->x, 1)) &&
-			(pinrng(box->p2.y, box->p1.y, p->y, 1)) &&
+			(pinrng(box->p1.y, box->p2.y, p->y, 1)) &&
 			(pinrng(box->p1.z, box->p2.z, p->z, 1))) ? 1 : 0;
 }
 
 /* evaluates whether or not two rectangles overlap and returns true if they do and false if not */
 int rinr(rect* box1, rect* box2) {
 	return ((pinrng(box1->p1.x, box1->p2.x, box2->p1.x, 1) || pinrng(box1->p1.x, box1->p2.x, box2->p2.x, 1)) &&
-			(pinrng(box1->p2.y, box1->p1.y, box2->p1.y, 1) || pinrng(box1->p2.y, box1->p1.y, box2->p2.y, 1)) &&
+			(pinrng(box1->p1.y, box1->p2.y, box2->p1.y, 1) || pinrng(box1->p1.y, box1->p2.y, box2->p2.y, 1)) &&
 			(pinrng(box1->p1.z, box1->p2.z, box2->p1.z, 1) || pinrng(box1->p1.z, box1->p2.z, box2->p2.z, 1))) ? 1 : 0;
 }
