@@ -18,6 +18,7 @@ int main(int argc, char *argv[]) {
 	}
 	BMP_CHECK_ERROR(stdout, -1);
   	point* points = (point*)malloc(sizeof(point) * BMP_GetHeight(img) * BMP_GetWidth(img));
+	printf("GOT HERE");
 	rtree* rt = (rtree*)malloc(sizeof(rtree));
 	rt->leaf = 1;
 	
