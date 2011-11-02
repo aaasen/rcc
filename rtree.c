@@ -277,10 +277,10 @@ point* psinrrt(rtree* tree, rect* qbox) {
         }
         if (tree && qbox) {
                 if(tree->leaf) {
-                        point* buf = malloc(sizeof(point) * tree->n + 1);
-                        for(i = 0; i < tree->n; i++) {
-                                if(pinr(qbox, &tree->points[i])) {
-                                        buf[++numpin] = tree->points[i];
+                        point* buf = malloc(sizeof(point) * tree->pa.len + 1);
+                        for(i = 0; i < tree->pa.len; i++) {
+                                if(pinr(qbox, &tree->pa.points[i])) {
+                                        buf[++numpin] = tree->pa.points[i];
                                         //add tree->points[i] to an array of points in the qbox
                                 }
                         }

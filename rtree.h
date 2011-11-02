@@ -32,11 +32,7 @@
 #include "parray.h"
 
 typedef struct rtree{
-	int n;/* Number of points in the section of a tree */
-	point * points;/* Array of points within the rtree */
-	/*
-	 * Should points be used to represent the corners?
-	 */
+	parray pa; /* array of points in the rtree */
 
 	rect mbr; /* Maximum Bounding Rectangle of the node */
 
@@ -44,6 +40,7 @@ typedef struct rtree{
 	/* Possibly make into an n-child rtree, if faster */
 	struct rtree * sub1;/* First sub tree if a leaf node */
 	struct rtree * sub2;/* Second sub tree if a leaf node */
+
 } rtree;
 
 rtree* putrt(rtree * tree, point * p);/* Add the specified point to the specified rtree */
@@ -63,7 +60,7 @@ void rebuildrt(rtree * tree);/* Recursively rebuild the entire tree, optimizing 
 rtree* pfindrt(rtree * tree, point * p);/* Recursively search through the rtree to find the rtree containing the specified point. Return null if the point is not in the tree. Assumes the rtree is properly resized */
 
 /* returns an array of points which are in the query box */
-point* psinrrt(rtree* tree, rect* qbox)
+point* psinrrt(rtree* tree, rect* qbox);
 
 void freert(rtree* tree); /* Recursively free the rtree and all of its nodes */
 

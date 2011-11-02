@@ -2,61 +2,39 @@
 #include <stdlib.h>
 #include "rtree.h"
 #include "qdbmp.h"
-#include "parray.h"
+#include "hmap.h"
 
-int pcount = 4;
+#define TESTFILE "testing/checkers.bmp"
 
 int main(int argc, char *argv[]) {
 	int i;
-/*	BMP* img;*/
-
+	int pcount; /* Number of pixels/points in bitmap */
+	rtree *rrt, *grt, *brt; /* R, G, B channels */
+	point* p;
 
 	for(i = 0; i < argc; i++) {
 		printf("argument at [%d]: %s\n", i, argv[i]);
 	}
-
-/*	point* p1 = malloc(sizeof(point));*/
-/*	setxyz(p1, 0, 0, 0);*/
-
-/*	printf("lenpa: 0\n");*/
-/*	parray* pa = malloc(sizeof(parray));*/
-/*	addpa(pa, p1);*/
-/*	printf("lenpa: %d\n", lenpa(pa));*/
-/*	*/
-/*	rempa(pa, p1);*/
-/*	printf("lenpa: %d\n", lenpa(pa));*/
-
-/*	free(p1);*/
-/*	free(pa);*/
-
-/*	if (argc >= 1){*/
-/*		img = BMP_ReadFile(argv[1]);*/
-/*	}*/
-/*	BMP_CHECK_ERROR(stdout, -1);*/
-/*  	*/
-  	point* points = (point*)malloc(sizeof(point) * 4); //BMP_GetHeight(img) * BMP_GetWidth(img)
-	printf("GOT HERE");
-	rtree* rt = (rtree*)malloc(sizeof(rtree));
-	rt->leaf = 1;
-	
-	points[1].z = 1;
-	points[0].z = 100;
-	points[2].z = 50;
-	points[3].z = 70;
-	bputrt(rt, points, pcount);
-	printf("First Point's z: %.2f\n", points[0].z);
-	subrt(rt);
-	printf("Standard Deviation: %f\n", sdevrt(rt, NULL, NULL));
-	if (rt->sub1){
-		printf("n1: %d\nn2: %d\n", rt->sub1->n, rt->sub2->n);
-		printf("Standard Deviation sub1: %f\n", sdevrt(rt->sub1, NULL, NULL));
-		printf("Standard Deviation sub2: %f\n", sdevrt(rt->sub2, NULL, NULL));
+	if (argc > 1){
+		loadbmp(argv[1], rrt, grt, brt);
+		printf("Loaded BMP\n");
+	} else {
+		loadbmp(TESTFILE, rrt, grt, brt);
+		printf("Using default BMP\n");
 	}
-	point* p = (point*)malloc(sizeof(point));
+
+
+	printf("Standard Deviation: %f\n", sdevrt(rrt, NULL, NULL));
+	if (rrt->sub1){
+		printf("n1: %zu\nn2: %zu\n", rrt->sub1->pa.len, rrt->sub2->pa.len);
+		printf("Standard Deviation sub1: %f\n", sdevrt(rrt->sub1, NULL, NULL));
+		printf("Standard Deviation sub2: %f\n", sdevrt(rrt->sub2, NULL, NULL));
+	}
+	p = (point*)malloc(sizeof(point));
 	setxyz(p, 0, 0, 60);
-	rtree* stree = pfindrt(rt, p);
+	rtree* stree = pfindrt(rrt, p);
 	if (stree){
-		printf("Found point with z = %.2f in an rtree containing %d points.\n", p->z, stree->n);
+		printf("Found point with z = %.2f in an rtree containing %zu points.\n", p->z, stree->pa.len);
 	} else {
 		printf("Did not find point with z = %.2f in the tree.\n", p->z);
 	}
@@ -95,8 +73,9 @@ int main(int argc, char *argv[]) {
 
  	printf("rinr: %d\n", rinr(r1, r2)); 
 
-	free(points);
-	freert(rt);
+	freert(rrt);
+	freert(grt);
+	freert(brt);
 	free(p); 
 	free(p1); 
 	free(r1); 
