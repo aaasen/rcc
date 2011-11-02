@@ -24,15 +24,12 @@
 #include <string.h>
 #include "point.h"
 #include "rect.h"
+#include "parray.h"
 
 static int maxsdev = 30; /* Maximum standard deviation within each rtree */
 
 typedef struct rtree{
-	int n;/* Number of points in the section of a tree */
-	point * points;/* Array of points within the rtree */
-	/*
-	 * Should points be used to represent the corners?
-	 */
+	parray pa; /* array of points in the rtree */
 
 	rect mbr; /* Maximum Bounding Rectangle of the node */
 
@@ -52,6 +49,7 @@ void rebuildrt(rtree * tree);
 rtree* pfindrt(rtree* tree, point * p);
 point* psinrrt(rtree* tree, rect* qbox);
 
+
 /* Add the specified point to the specified rtree
  * Can not resize the rtree, only expand it. e.g. a large prism has been predefined
  * so that all points that fall within it will be put in it. After a single point
@@ -63,14 +61,12 @@ rtree* putrt(rtree * tree, point * p){
 	}
 	if (p != NULL){
 		if (tree->leaf){
-			tree->n++;
-			tree->points = (point*)realloc(tree->points, sizeof(point) * tree->n);
-			tree->points[tree->n - 1] = *p;
+			addpa(&tree->pa, p);
 		} else {
 			/* Select the subtree that can contain the point with the least expansion, or
 			 * if both require the same expansion, add to the first.
 			 */
-			 
+
 			double rszsub1 = rszsum(&tree->sub1->mbr, p);
 			double rszsub2 = rszsum(&tree->sub2->mbr, p);
 			putrt(rszsub1 >= rszsub2 ? tree->sub1 : tree->sub2, p);
@@ -80,18 +76,17 @@ rtree* putrt(rtree * tree, point * p){
 	}
 }
 
-/* 
+/*
  * Efficiently bulk add all of the points in p.
  * Fails if tree is not a leaf.
  */
 void bputrt(rtree* tree, point* p, int n) {
 	int i;
-	
 	if (tree->leaf){
-		tree->points = (point*)realloc(tree->points, (n + tree->n)*sizeof(point));
-		memcpy(&tree->points[tree->n], p, n * sizeof(point));
-		tree->n += n;
-		printf("%d points in tree\n", tree->n);
+		tree->pa.points = (point*)realloc(tree->pa.points, (n + tree->pa.len) * sizeof(point));
+		memcpy(&tree->pa.points[tree->pa.len], p, n * sizeof(point));
+		tree->pa.len += n;
+		printf("%d points in tree", (int) tree->pa.len);
 		subrt(tree);
 		resizert(tree);
 	} else {
@@ -102,16 +97,16 @@ void bputrt(rtree* tree, point* p, int n) {
 /* Recursively find and remove the point from the tree */
 /* does not resize or delete the node after deletion */
 rtree* remrt(rtree* tree, point * p){
+	int i; 
+	
 	if (tree->sub1 == NULL && tree->sub2 == NULL){
 		tree->leaf = 1;
 	}
 	if (p != NULL) {
 		if (tree->leaf){
-			int i; for(i = 0; i < tree->n; i++) {
-				if(peq(p, &tree->points[i])) {
-					memmove(&tree->points[i], &tree->points[tree->n-1], sizeof(point));
-					tree->n--;
-					tree->points = realloc(tree->points, sizeof(point) * tree->n);
+			for(i = 0; i < tree->pa.len; i++) {
+				if(peq(p, &tree->pa.points[i])) {
+					rempa(&tree->pa, p);
 				}
 			}
 		} else {
@@ -135,19 +130,19 @@ double sdevrt(rtree * tree, point * max, point * min){
 	double mean;
 	double sumsqr;
 
-	if (tree->n <= 1 || !(tree->leaf)){
+	if (tree->pa.len <= 1 || !(tree->leaf)){
 		return 0;
 	}
 	total = 0;
-	maxp = &(tree->points[0]);/* Keep track of maximum z value point */
-	minp = &(tree->points[0]);/* Keep track of minimum z value point */
-	for (i = 0; i < tree->n; i++){
-		total += tree->points[i].z;
-		if (tree->points[i].z > maxp->z){
-			maxp = &(tree->points[i]);
+	maxp = &(tree->pa.points[0]);/* Keep track of maximum z value point */
+	minp = &(tree->pa.points[0]);/* Keep track of minimum z value point */
+	for (i = 0; i < tree->pa.len; i++){
+		total += tree->pa.points[i].z;
+		if (tree->pa.points[i].z > maxp->z){
+			maxp = &(tree->pa.points[i]);
 		}
-		if (tree->points[i].z < minp->z){
-			minp = &(tree->points[i]);
+		if (tree->pa.points[i].z < minp->z){
+			minp = &(tree->pa.points[i]);
 		}
 	}
 	if (max && min){
@@ -157,12 +152,12 @@ double sdevrt(rtree * tree, point * max, point * min){
 		setxyz(max, maxp->x, maxp->y, maxp->z);
 		setxyz(min, minp->x, minp->y, minp->z);
 	}
-	mean = total / tree->n;
+	mean = total / tree->pa.len;
 	sumsqr = 0;
-	for (i = 0; i < tree->n; i++){
-	  sumsqr += pow(tree->points[i].z - mean, 2);
+	for (i = 0; i < tree->pa.len; i++){
+	  sumsqr += pow(tree->pa.points[i].z - mean, 2);
 	}
-	return sqrt(sumsqr / (tree->n - 1));
+	return sqrt(sumsqr / (tree->pa.len - 1));
 }
 
 /*
@@ -199,21 +194,21 @@ int subrt(rtree* tree){
 				setxyz(&tree->sub2->mbr.p1, min->x, min->y, min->z);
 				setxyz(&tree->sub2->mbr.p2, min->x, min->y, min->z);
 			}
-			for (i = 0; i < tree->n; i++){
+			for (i = 0; i < tree->pa.len; i++){
 
-				putrt(tree, &tree->points[i]);
-				/*			sum1 = rszsum(tree->sub1, &tree->points[i]);
-							sum2 = rszsum(tree->sub2, &tree->points[i]);
+				putrt(tree, &tree->pa.points[i]);
+				/*			sum1 = rszsum(tree->sub1, &tree->pa.points[i]);
+							sum2 = rszsum(tree->sub2, &tree->pa.points[i]);
 							if (sum2 > sum1){
-							putrt(tree->sub1, &tree->points[i]);
+							putrt(tree->sub1, &tree->pa.points[i]);
 							} else {
-							putrt(tree->sub2, &tree->points[i]);
+							putrt(tree->sub2, &tree->pa.points[i]);
 							}*/
 			}
 			/* Free any unneeded memory in the subtrees, then free the original point array */
-			free(tree->points);
-			tree->points = NULL;
-			tree->n = 0;
+			free(tree->pa.points);
+			tree->pa.points = NULL;
+			tree->pa.len = 0;
 			subrt(tree->sub1);
 			subrt(tree->sub2);
 			free(max);
@@ -252,8 +247,8 @@ rtree* pfindrt(rtree* tree, point * p){
 
 	if (tree && p){
 		if (tree->leaf){
-			for (i = 0; i < tree->n; i++){
-				if (peq(&tree->points[i], p)){
+			for (i = 0; i < tree->pa.len; i++){
+				if (peq(&tree->pa.points[i], p)){
 					return tree;
 				}
 			}
@@ -275,54 +270,54 @@ rtree* pfindrt(rtree* tree, point * p){
 
 /* returns an array of points which are in the query box */
 point* psinrrt(rtree* tree, rect* qbox) {
-	int i;
-	int numpin = 0;
-	if (tree->sub1 == NULL && tree->sub2 == NULL){
-		tree->leaf = 1;
-	}
-	if (tree && qbox) {
-		if(tree->leaf) {
-			point* buf = malloc(sizeof(point) * tree->n + 1);
-			for(i = 0; i < tree->n; i++) {
-				if(pinr(qbox, &tree->points[i])) {
-					buf[++numpin] = tree->points[i];
-					//add tree->points[i] to an array of points in the qbox
-				}
-			}
-			point* p1 = malloc(sizeof(point));
-			numpin++;
-			setxyz(p1, numpin, -1, -1);
-			buf[0] = *p1;
-			buf = realloc(buf, numpin);
-			return buf;
-		} else {
-			int sub1length, sub2length;
-			point* sub1buf;
-			point* sub2buf;
-			if(rinr(&tree->sub1->mbr, qbox)) {
-				point* sub1buf = psinrrt(tree->sub1, qbox);
-				sub1length = sub1buf[0].x;
-				
-				//add the result of psinrrt(tree->sub1, qbox); to an array of points in the qbox
-			}
-			if(rinr(&tree->sub2->mbr, qbox)) {
-				point* sub2buf = psinrrt(tree->sub2, qbox);
-				sub2length = sub2buf[0].x;
-			//repeat above for second subtree
-			}
-			point* sumbuf = malloc((sub1length + sub2length - 2) * sizeof(point));
-			memcpy(sumbuf, &sub1buf[1], sizeof(point) * (sub1length-1));
-			memcpy(&sumbuf[sub1length-1], &sub2buf[1], sizeof(point) * (sub2length-1));
-		}
-		//return array of points in qbox
-	}
-	return NULL; //if the program flow reaches here the tree or qbox is null 
+        int i;
+        int numpin = 0;
+        if (tree->sub1 == NULL && tree->sub2 == NULL){
+                tree->leaf = 1;
+        }
+        if (tree && qbox) {
+                if(tree->leaf) {
+                        point* buf = malloc(sizeof(point) * tree->n + 1);
+                        for(i = 0; i < tree->n; i++) {
+                                if(pinr(qbox, &tree->points[i])) {
+                                        buf[++numpin] = tree->points[i];
+                                        //add tree->points[i] to an array of points in the qbox
+                                }
+                        }
+                        point* p1 = malloc(sizeof(point));
+                        numpin++;
+                        setxyz(p1, numpin, -1, -1);
+                        buf[0] = *p1;
+                        buf = realloc(buf, numpin);
+                        return buf;
+                } else {
+                        int sub1length, sub2length;
+                        point* sub1buf;
+                        point* sub2buf;
+                        if(rinr(&tree->sub1->mbr, qbox)) {
+                                point* sub1buf = psinrrt(tree->sub1, qbox);
+                                sub1length = sub1buf[0].x;
+                                
+                                //add the result of psinrrt(tree->sub1, qbox); to an array of points in the qbox
+                        }
+                        if(rinr(&tree->sub2->mbr, qbox)) {
+                                point* sub2buf = psinrrt(tree->sub2, qbox);
+                                sub2length = sub2buf[0].x;
+                        //repeat above for second subtree
+                        }
+                        point* sumbuf = malloc((sub1length + sub2length - 2) * sizeof(point));
+                        memcpy(sumbuf, &sub1buf[1], sizeof(point) * (sub1length-1));
+                        memcpy(&sumbuf[sub1length-1], &sub2buf[1], sizeof(point) * (sub2length-1));
+                }
+                //return array of points in qbox
+        }
+        return NULL; //if the program flow reaches here the tree or qbox is null 
 }
 
 /* Recursively free the rtree and all of its nodes */
 void freert(rtree* tree){
 	if (tree->leaf){
-		free(tree->points);
+		free(tree->pa.points);
 	} else {
 	  freert(tree->sub1);
 	  freert(tree->sub2);

@@ -1,7 +1,7 @@
 # Make file by Dylan Swiggett
 # Written on Linux Mint 11
 # Only compatible with unix/linux based operating systems
-# 
+#
 # make objects - compile all c files to objects
 # make exe - compile all objects to an executable
 # make clean - remove all object files
@@ -10,8 +10,8 @@
 # make leak - make all and then run a full valgrind leak check on the output
 
 CFLAGS = -Wall -lm
-FILES = main.c rtree.c point.c rect.c qdbmp.c hmap.c
-OBJECTS = main.o rtree.o point.o rect.o qdbmp.o hmap.o
+FILES = main.c rtree.c point.c rect.c qdbmp.c hmap.c parray.c
+OBJECTS = main.o rtree.o point.o rect.o qdbmp.o hmap.o parray.o
 MAIN = main
 CC = gcc
 OUTPUT = rtree
