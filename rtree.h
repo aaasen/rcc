@@ -60,7 +60,7 @@ void rebuildrt(rtree * tree);/* Recursively rebuild the entire tree, optimizing 
 rtree* pfindrt(rtree * tree, point * p);/* Recursively search through the rtree to find the rtree containing the specified point. Return null if the point is not in the tree. Assumes the rtree is properly resized */
 
 /* returns an array of points which are in the query box */
-point* psinrrt(rtree* tree, rect* qbox);
+parray* rectqrt(rtree* tree, rect* qbox);
 
 void freert(rtree* tree); /* Recursively free the rtree and all of its nodes */
 

@@ -47,7 +47,7 @@ int subrt(rtree * tree);
 int resizert(rtree * tree);
 void rebuildrt(rtree * tree);
 rtree* pfindrt(rtree* tree, point * p);
-point* psinrrt(rtree* tree, rect* qbox);
+parray* rectqrt(rtree* tree, rect* qbox);
 
 
 /* Add the specified point to the specified rtree
@@ -97,8 +97,8 @@ void bputrt(rtree* tree, point* p, int n) {
 /* Recursively find and remove the point from the tree */
 /* does not resize or delete the node after deletion */
 rtree* remrt(rtree* tree, point * p){
-	int i; 
-	
+	int i;
+
 	if (tree->sub1 == NULL && tree->sub2 == NULL){
 		tree->leaf = 1;
 	}
@@ -269,49 +269,35 @@ rtree* pfindrt(rtree* tree, point * p){
 }
 
 /* returns an array of points which are in the query box */
-point* psinrrt(rtree* tree, rect* qbox) {
-        int i;
-        int numpin = 0;
-        if (tree->sub1 == NULL && tree->sub2 == NULL){
-                tree->leaf = 1;
-        }
-        if (tree && qbox) {
-                if(tree->leaf) {
-                        point* buf = malloc(sizeof(point) * tree->pa.len + 1);
-                        for(i = 0; i < tree->pa.len; i++) {
-                                if(pinr(qbox, &tree->pa.points[i])) {
-                                        buf[++numpin] = tree->pa.points[i];
-                                        //add tree->points[i] to an array of points in the qbox
-                                }
-                        }
-                        point* p1 = malloc(sizeof(point));
-                        numpin++;
-                        setxyz(p1, numpin, -1, -1);
-                        buf[0] = *p1;
-                        buf = realloc(buf, numpin);
-                        return buf;
-                } else {
-                        int sub1length, sub2length;
-                        point* sub1buf;
-                        point* sub2buf;
-                        if(rinr(&tree->sub1->mbr, qbox)) {
-                                point* sub1buf = psinrrt(tree->sub1, qbox);
-                                sub1length = sub1buf[0].x;
-                                
-                                //add the result of psinrrt(tree->sub1, qbox); to an array of points in the qbox
-                        }
-                        if(rinr(&tree->sub2->mbr, qbox)) {
-                                point* sub2buf = psinrrt(tree->sub2, qbox);
-                                sub2length = sub2buf[0].x;
-                        //repeat above for second subtree
-                        }
-                        point* sumbuf = malloc((sub1length + sub2length - 2) * sizeof(point));
-                        memcpy(sumbuf, &sub1buf[1], sizeof(point) * (sub1length-1));
-                        memcpy(&sumbuf[sub1length-1], &sub2buf[1], sizeof(point) * (sub2length-1));
-                }
-                //return array of points in qbox
-        }
-        return NULL; //if the program flow reaches here the tree or qbox is null 
+parray* rectqrt(rtree* tree, rect* qbox) {
+	int i;
+	parray* inquery = (parray*) malloc(sizeof(parray)); //parray that contains all points in the query box
+	inquery->len = 0; //set this to 0 to override residual memory gook (e.g. 1230812398264)
+	
+	if (!tree->sub1 && !tree->sub2) { //logic check
+		tree->leaf = 1;
+	}
+	if (tree && qbox) { //make sure arguments aren't null
+		if(tree->leaf) { //if leaf iterate through and add all points that are in the qbox to inquery
+			for(i = 0; i < tree->pa.len; i++) {
+				if(pinr(qbox, &tree->pa.points[i])) {
+					addpa(inquery, &tree->pa.points[i]);
+				}
+			}
+		} else { //if not leaf recurse through child nodes and return sum of that
+			parray* sub1buf;
+			parray* sub2buf;
+			if(rinr(&tree->sub1->mbr, qbox)) {
+				parray* sub1buf = rectqrt(tree->sub1, qbox);
+			}
+			if(rinr(&tree->sub2->mbr, qbox)) {
+				parray* sub2buf = rectqrt(tree->sub2, qbox);
+			}
+			inquery = mergepa(sub1buf, sub2buf);
+		}
+		return inquery;
+	}
+	return NULL; //if program flows to here some arguments are null
 }
 
 /* Recursively free the rtree and all of its nodes */
