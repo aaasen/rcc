@@ -9,7 +9,7 @@
 #include "point.h"
 
 typedef struct parray {
-	size_t len;
+	int len;
 	point* points;
 } parray;
 
@@ -22,7 +22,10 @@ void tostringpa(parray* pa);
 /* adds a point to the array */
 signed int addpa(parray* pa, point* p) {
 	if(pa && p) {
-		pa->points = (point*) realloc(pa->points, sizeof(point) * ++pa->len);
+		printf("Adding point (%.2f, %.2f, %.2f) to point array with %d points.\n", p->x, p->y, p->z, pa->len);
+
+		pa->points = (point*) realloc(pa->points, sizeof(point) * (++pa->len));
+		printf("added point.\n");
 		pa->points[pa->len - 1] = *p;
 		return 1;
 	}
@@ -70,3 +73,7 @@ void tostringpa(parray* pa) {
 	}
 }
 
+void defaultpa(parray* pa){
+	pa->len = 0;
+	pa->points = (point*)malloc(sizeof(point));
+}

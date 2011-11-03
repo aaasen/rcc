@@ -12,7 +12,7 @@
 #include "point.h" 
 
 typedef struct parray {
-	size_t len;
+	int len;
 	point* points;
 } parray;
 
@@ -26,5 +26,7 @@ parray* mergepa(parray* pa1, parray* pa2);
 size_t lenpa(parray* pa);
 /* prints the coordinates of all points in the parray */
 void tostringpa(parray* pa);
+/* Set len to 0 and initialize points */
+void defaultpa(parray* pa);
 
 #endif

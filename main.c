@@ -4,7 +4,7 @@
 #include "qdbmp.h"
 #include "hmap.h"
 
-#define TESTFILE "testing/checkers.bmp"
+#define TESTFILE "testing/checker.bmp"
 
 int main(int argc, char *argv[]) {
 	int i;
@@ -15,29 +15,33 @@ int main(int argc, char *argv[]) {
 	for(i = 0; i < argc; i++) {
 		printf("argument at [%d]: %s\n", i, argv[i]);
 	}
-/*	if (argc > 1){*/
-/*		loadbmp(argv[1], rrt, grt, brt);*/
-/*		printf("Loaded BMP\n");*/
-/*	} else {*/
-/*		loadbmp(TESTFILE, rrt, grt, brt);*/
-/*		printf("Using default BMP\n");*/
-/*	}*/
-
-
-/*	printf("Standard Deviation: %f\n", sdevrt(rrt, NULL, NULL));*/
-/*	if (rrt->sub1){*/
-/*		printf("n1: %zu\nn2: %zu\n", rrt->sub1->pa.len, rrt->sub2->pa.len);*/
-/*		printf("Standard Deviation sub1: %f\n", sdevrt(rrt->sub1, NULL, NULL));*/
-/*		printf("Standard Deviation sub2: %f\n", sdevrt(rrt->sub2, NULL, NULL));*/
-/*	}*/
-/*	p = (point*)malloc(sizeof(point));*/
-/*	setxyz(p, 0, 0, 60);*/
-/*	rtree* stree = pfindrt(rrt, p);*/
-/*	if (stree){*/
-/*		printf("Found point with z = %.2f in an rtree containing %zu points.\n", p->z, stree->pa.len);*/
-/*	} else {*/
-/*		printf("Did not find point with z = %.2f in the tree.\n", p->z);*/
-/*	}*/
+	if (argc > 1){
+		printf("Loading BMP %s\n", argv[1]);
+		if (!loadbmp(argv[1], rrt, grt, brt)){
+			printf("Failed to load BMP. Exiting.\n");
+			exit(0);
+		}
+	} else {
+		printf("Using default BMP %s\n", TESTFILE);
+		if (!loadbmp(TESTFILE, rrt, grt, brt)){
+			printf("Failed to load BMP. Exiting.\n");
+			exit(0);
+		}
+	}
+	printf("Standard Deviation: %f\n", sdevrt(rrt, NULL, NULL));
+	if (rrt->sub1){
+		printf("n1: %d\nn2: %d\n", rrt->sub1->pa.len, rrt->sub2->pa.len);
+		printf("Standard Deviation sub1: %f\n", sdevrt(rrt->sub1, NULL, NULL));
+		printf("Standard Deviation sub2: %f\n", sdevrt(rrt->sub2, NULL, NULL));
+	}
+	p = (point*)malloc(sizeof(point));
+	setxyz(p, 0, 0, 60);
+	rtree* stree = pfindrt(rrt, p);
+	if (stree){
+		printf("Found point with z = %.2f in an rtree containing %d points.\n", p->z, stree->pa.len);
+	} else {
+		printf("Did not find point with z = %.2f in the tree.\n", p->z);
+	}
 
  	rect* r1 = malloc(sizeof(rect));
  	/* point* r1p1 = malloc(sizeof(point)); */
