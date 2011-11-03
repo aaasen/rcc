@@ -10,7 +10,7 @@
 #include "qdbmp.h"
 
 /* Load the bmp image into r, g, and b rtrees */
-void loadbmp(char* file, rtree* r, rtree* g, rtree* b){
+int loadbmp(char* file, rtree* r, rtree* g, rtree* b){
   	BMP* img;
 	point* points;
 	point* rpoint, *gpoint, *bpoint;
@@ -56,4 +56,6 @@ void loadbmp(char* file, rtree* r, rtree* g, rtree* b){
 	subrt(r), subrt(g), subrt(b);
 
 	rt = (rtree*)malloc(sizeof(rtree));
+	
+	return 1;
 }

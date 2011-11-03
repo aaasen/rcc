@@ -1,3 +1,7 @@
+/*
+ * A basic 3D point.
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
