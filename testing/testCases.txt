@@ -1,0 +1,13 @@
+1. Input with lowest compression level, and output should be the original image.
+
+2. Input with highest compression level, and output should be a single color.
+
+3. All compression levels except 0 result in a smaller file than the original.
+
+4. All compression levels except 0 remove artifacts and graininess.
+
+5. Compression should be near instant - sub 1/30th of a second.
+
+6. Console UI is logical and easy to use.
+
+7. A black and white checkerboard should only change at highest compression level. ("checker.bmp")
