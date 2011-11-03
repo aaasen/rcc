@@ -20,4 +20,7 @@ int peq(point* p1, point* p2); /* returns true if points are equal, false if not
 /* if inclusive is true <= will be used; < will be used if not */
 int pinrng(double lower, double upper, double p, int inclusive);
 
+/* returns a string representation of the point in standard coordinate format */
+char* tostringp(point* p);
+
 #endif

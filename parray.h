@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <stdio.h>
 #include "point.h" 
 
 typedef struct parray {
@@ -19,7 +20,11 @@ typedef struct parray {
 signed int addpa(parray* pa, point* p);
 /* performs a brute force search through the array and removes all matching points and returns -1 if any arguments are null*/
 signed int rempa(parray* pa, point* p);
+/* returns a parray that contains the contents of both arguments */
+parray* mergepa(parray* pa1, parray* pa2);
 /* returns the number of points in the array (parray.len) */
 size_t lenpa(parray* pa);
+/* prints the coordinates of all points in the parray */
+void tostringpa(parray* pa);
 
 #endif
