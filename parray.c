@@ -22,10 +22,10 @@ void tostringpa(parray* pa);
 /* adds a point to the array */
 signed int addpa(parray* pa, point* p) {
 	if(pa && p) {
-		printf("Adding point (%.2f, %.2f, %.2f) to point array with %d points.\n", p->x, p->y, p->z, pa->len);
+	  //printf("Adding point (%.2f, %.2f, %.2f) to point array with %d points.\n", p->x, p->y, p->z, pa->len);
 
 		pa->points = (point*) realloc(pa->points, sizeof(point) * (++pa->len));
-		printf("added point.\n");
+		//printf("added point.\n");
 		pa->points[pa->len - 1] = *p;
 		return 1;
 	}

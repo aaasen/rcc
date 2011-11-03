@@ -62,6 +62,9 @@ rtree* pfindrt(rtree * tree, point * p);/* Recursively search through the rtree 
 /* returns an array of points which are in the query box */
 parray* rectqrt(rtree* tree, rect* qbox);
 
+/* Allocate and assign everything necessary for a new leaf rtree */
+rtree* defaultrt();
+
 void freert(rtree* tree); /* Recursively free the rtree and all of its nodes */
 
 #endif

@@ -12,6 +12,10 @@ int main(int argc, char *argv[]) {
 	rtree *rrt, *grt, *brt; /* R, G, B channels */
 	point* p;
 
+	rrt = defaultrt();
+	grt = defaultrt();
+	brt = defaultrt();
+
 	for(i = 0; i < argc; i++) {
 		printf("argument at [%d]: %s\n", i, argv[i]);
 	}
@@ -28,14 +32,20 @@ int main(int argc, char *argv[]) {
 			exit(0);
 		}
 	}
-	printf("Standard Deviation: %f\n", sdevrt(rrt, NULL, NULL));
+	if (!(rrt && grt && brt)){
+		printf("R/G/B trees do not all exist. Exiting.\n");
+		exit(0);
+	}
+	printf("Got to this point... rrt leaf status: %d\n", rrt->leaf);
+	printf("Point count: %d\n", rrt->pa.len);
+	printf("Standard Deviation: %f\n for %d points\n", sdevrt(rrt, NULL, NULL), rrt->pa.len);
 	if (rrt->sub1){
 		printf("n1: %d\nn2: %d\n", rrt->sub1->pa.len, rrt->sub2->pa.len);
 		printf("Standard Deviation sub1: %f\n", sdevrt(rrt->sub1, NULL, NULL));
 		printf("Standard Deviation sub2: %f\n", sdevrt(rrt->sub2, NULL, NULL));
 	}
 	p = (point*)malloc(sizeof(point));
-	setxyz(p, 0, 0, 60);
+	setxyz(p, 0, 0, 0);
 	rtree* stree = pfindrt(rrt, p);
 	if (stree){
 		printf("Found point with z = %.2f in an rtree containing %d points.\n", p->z, stree->pa.len);

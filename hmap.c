@@ -34,12 +34,15 @@ int loadbmp(char* file, rtree* r, rtree* g, rtree* b){
   	points = (point*)malloc(sizeof(point) * pcount);
 
 	/* Allocate errything */
-	r = (rtree*)malloc(sizeof(rtree));
-	g = (rtree*)malloc(sizeof(rtree));
-	b = (rtree*)malloc(sizeof(rtree));
-	defaultpa(&r->pa);
-	defaultpa(&g->pa);
-	defaultpa(&b->pa);
+	/* r = (rtree*)malloc(sizeof(rtree)); */
+	/* g = (rtree*)malloc(sizeof(rtree)); */
+	/* b = (rtree*)malloc(sizeof(rtree)); */
+	/* defaultpa(&r->pa); */
+	/* defaultpa(&g->pa); */
+	/* defaultpa(&b->pa); */
+	/* r = *defaultrt(); */
+	/* g = *defaultrt(); */
+	/* b = *defaultrt(); */
 	rchar = (char*)malloc(sizeof(char));
 	gchar = (char*)malloc(sizeof(char));
 	bchar = (char*)malloc(sizeof(char));
@@ -56,11 +59,11 @@ int loadbmp(char* file, rtree* r, rtree* g, rtree* b){
 			gpoint = (point*)malloc(sizeof(point));
 			bpoint = (point*)malloc(sizeof(point));
 			BMP_GetPixelRGB(img, i, j, rchar, gchar, bchar);
-			printf("OUTPUT: %d, %d, %d\n", atoi(rchar), atoi(gchar), atoi(bchar));
+			//			printf("OUTPUT: %d, %d, %d\n", atoi(rchar), atoi(gchar), atoi(bchar));
 			setxyz(rpoint, i, j, atoi(rchar));
 			setxyz(gpoint, i, j, atoi(gchar));
 			setxyz(bpoint, i, j, atoi(bchar));
-			putrt(r, rpoint); /* Error is here */
+			putrt(r, rpoint);
 			putrt(g, gpoint);
 			putrt(b, bpoint);
 		}

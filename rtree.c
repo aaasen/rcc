@@ -48,6 +48,7 @@ int resizert(rtree * tree);
 void rebuildrt(rtree * tree);
 rtree* pfindrt(rtree* tree, point * p);
 parray* rectqrt(rtree* tree, rect* qbox);
+rtree* defaultrt();
 
 
 /* Add the specified point to the specified rtree
@@ -130,14 +131,14 @@ double sdevrt(rtree * tree, point * max, point * min){
 	double mean;
 	double sumsqr;
 
-	if (tree->pa.len <= 1 || !(tree->leaf)){
+	if (tree->pa.len <= 1 || !(tree->pa.points) || !(tree->leaf)){
 		return 0;
 	}
 	total = 0;
 	maxp = &(tree->pa.points[0]);/* Keep track of maximum z value point */
 	minp = &(tree->pa.points[0]);/* Keep track of minimum z value point */
 	for (i = 0; i < tree->pa.len; i++){
-		total += tree->pa.points[i].z;
+		total += tree->pa.points[i].z; /* THIS LINE'Y'LINE IS THE SEG'Y'SEG */
 		if (tree->pa.points[i].z > maxp->z){
 			maxp = &(tree->pa.points[i]);
 		}
@@ -180,10 +181,12 @@ int subrt(rtree* tree){
 
 		if (sdev > maxsdev){
 			tree->leaf = 0;
-			tree->sub1 = (rtree*)malloc(sizeof(rtree));
-			tree->sub2 = (rtree*)malloc(sizeof(rtree));
+			/* tree->sub1 = (rtree*)malloc(sizeof(rtree)); */
+			/* tree->sub2 = (rtree*)malloc(sizeof(rtree)); */
+			tree->sub1 = defaultrt();
+			tree->sub2 = defaultrt();
 			/*
-			 * Create new subtrees, starting with the lowest and highest z values possible.
+			 * Create new subtrees, starting with the lowest and highest z values possible.p
 			 * Sub1 starts with the highest point, sub2 with the lowest.
 			 */
 			if (max){
@@ -208,7 +211,7 @@ int subrt(rtree* tree){
 			/* Free any unneeded memory in the subtrees, then free the original point array */
 			free(tree->pa.points);
 			tree->pa.points = NULL;
-			tree->pa.len = 0;
+			/* tree->pa.len = 0; */
 			subrt(tree->sub1);
 			subrt(tree->sub2);
 			free(max);
@@ -298,6 +301,16 @@ parray* rectqrt(rtree* tree, rect* qbox) {
 		return inquery;
 	}
 	return NULL; //if program flows to here some arguments are null
+}
+
+/* Allocate and assign everything necessary for a new leaf rtree */
+rtree* defaultrt(){
+	rtree* tree;
+	
+	tree = (rtree*)malloc(sizeof(rtree));
+	tree->leaf = 1;
+	defaultpa(&tree->pa);
+	return tree;
 }
 
 /* Recursively free the rtree and all of its nodes */
