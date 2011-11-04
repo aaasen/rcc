@@ -26,7 +26,7 @@
 #include "rect.h"
 #include "parray.h"
 
-static int maxsdev = 30; /* Maximum standard deviation within each rtree */
+static int maxsdev = 13; /* Maximum standard deviation within each rtree */
 
 typedef struct rtree{
 	parray pa; /* array of points in the rtree */
@@ -57,7 +57,7 @@ rtree* defaultrt();
  * is inserted, the tree should NOT be shrunk to only fit that point.
  */
 rtree* putrt(rtree * tree, point * p){
-	if (tree->sub1 == NULL && tree->sub2 == NULL){
+	if (!(tree->sub1 || tree->sub2)){
 		tree->leaf = 1;
 	}
 	if (p != NULL){
@@ -164,7 +164,7 @@ double sdevrt(rtree * tree, point * max, point * min){
 /*
  * Subdivide the selected rtree if a leaf and if meets subdivision reqs
  * Returns false if rtree doesn't need to be subdivided under current rule
-*/
+ */
 int subrt(rtree* tree){
 	point* max;
 	point* min;
@@ -211,6 +211,7 @@ int subrt(rtree* tree){
 			/* Free any unneeded memory in the subtrees, then free the original point array */
 			free(tree->pa.points);
 			tree->pa.points = NULL;
+			tree->pa.len = 0;
 			/* tree->pa.len = 0; */
 			subrt(tree->sub1);
 			subrt(tree->sub2);

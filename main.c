@@ -36,8 +36,6 @@ int main(int argc, char *argv[]) {
 		printf("R/G/B trees do not all exist. Exiting.\n");
 		exit(0);
 	}
-	printf("Got to this point... rrt leaf status: %d\n", rrt->leaf);
-	printf("Point count: %d\n", rrt->pa.len);
 	printf("Standard Deviation: %f\n for %d points\n", sdevrt(rrt, NULL, NULL), rrt->pa.len);
 	if (rrt->sub1){
 		printf("n1: %d\nn2: %d\n", rrt->sub1->pa.len, rrt->sub2->pa.len);
@@ -45,14 +43,14 @@ int main(int argc, char *argv[]) {
 		printf("Standard Deviation sub2: %f\n", sdevrt(rrt->sub2, NULL, NULL));
 	}
 	p = (point*)malloc(sizeof(point));
-	setxyz(p, 0, 0, 0);
+	setxyz(p, 0, 0, 255);
 	rtree* stree = pfindrt(rrt, p);
 	if (stree){
 		printf("Found point with z = %.2f in an rtree containing %d points.\n", p->z, stree->pa.len);
 	} else {
 		printf("Did not find point with z = %.2f in the tree.\n", p->z);
 	}
-
+	//tostringpa(&rrt->sub2->pa);
  	rect* r1 = malloc(sizeof(rect));
  	/* point* r1p1 = malloc(sizeof(point)); */
  	/* point* r1p2 = malloc(sizeof(point)); */
@@ -86,7 +84,6 @@ int main(int argc, char *argv[]) {
  	/* r2->p2 = *r2p2; */
 
 /* 	printf("rinr: %d\n", rinr(r1, r2));*/
-
     point* px1 = malloc(sizeof(point));
     setxyz(px1, 0, 0, 0);
 
@@ -99,7 +96,6 @@ int main(int argc, char *argv[]) {
     point* px2 = malloc(sizeof(point));
     setxyz(px2, 10, 10, 10);
     //printf("%s\n", tostringp(px2));
-
     parray* pa2 = malloc(sizeof(parray));
     //printf("lenpa2: %d\n", (int) lenpa(pa2));
     addpa(pa2, px2);

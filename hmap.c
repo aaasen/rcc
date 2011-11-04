@@ -11,14 +11,14 @@
 
 /* Load the bmp image into r, g, and b rtrees. Return true if successful */
 int loadbmp(char* file, rtree* r, rtree* g, rtree* b){
-	rtree* rt;
 	point* rpoint, *gpoint, *bpoint;
 	point* points;
   	BMP* img;
 	int w, h, pcount; /* Number of pixels/points in bitmap */
 	int verify; /* Used to verify image load success */
-	char* rchar, *bchar, *gchar;
+	UCHAR rchar, bchar, gchar;
 	int i, j; /* Iterators */;
+	int rval, gval, bval;
 	
 	/* Load the image */
 	img = BMP_ReadFile(file);
@@ -33,20 +33,6 @@ int loadbmp(char* file, rtree* r, rtree* g, rtree* b){
 	pcount = w * h;
   	points = (point*)malloc(sizeof(point) * pcount);
 
-	/* Allocate errything */
-	/* r = (rtree*)malloc(sizeof(rtree)); */
-	/* g = (rtree*)malloc(sizeof(rtree)); */
-	/* b = (rtree*)malloc(sizeof(rtree)); */
-	/* defaultpa(&r->pa); */
-	/* defaultpa(&g->pa); */
-	/* defaultpa(&b->pa); */
-	/* r = *defaultrt(); */
-	/* g = *defaultrt(); */
-	/* b = *defaultrt(); */
-	rchar = (char*)malloc(sizeof(char));
-	gchar = (char*)malloc(sizeof(char));
-	bchar = (char*)malloc(sizeof(char));
-	
 	/* Make r, g and b rtrees leafs */
 	r->leaf = 1;
 	g->leaf = 1;
@@ -58,11 +44,13 @@ int loadbmp(char* file, rtree* r, rtree* g, rtree* b){
 			rpoint = (point*)malloc(sizeof(point));
 			gpoint = (point*)malloc(sizeof(point));
 			bpoint = (point*)malloc(sizeof(point));
-			BMP_GetPixelRGB(img, i, j, rchar, gchar, bchar);
-			//			printf("OUTPUT: %d, %d, %d\n", atoi(rchar), atoi(gchar), atoi(bchar));
-			setxyz(rpoint, i, j, atoi(rchar));
-			setxyz(gpoint, i, j, atoi(gchar));
-			setxyz(bpoint, i, j, atoi(bchar));
+			BMP_GetPixelRGB(img, i, j, &rchar, &gchar, &bchar);
+			rval = (int)(rchar);
+			gval = (int)(gchar);
+			bval = (int)(bchar);
+			setxyz(rpoint, i, j, rchar);
+			setxyz(gpoint, i, j, gchar);
+			setxyz(bpoint, i, j, bchar);
 			putrt(r, rpoint);
 			putrt(g, gpoint);
 			putrt(b, bpoint);
@@ -72,6 +60,6 @@ int loadbmp(char* file, rtree* r, rtree* g, rtree* b){
 	/* Subdivide the three rtrees */
 	subrt(r), subrt(g), subrt(b);
 
-	rt = (rtree*)malloc(sizeof(rtree));
+	BMP_Free(img);
 	return 1;
 }
