@@ -39,7 +39,7 @@ int pinrng(double lower, double upper, double p, int inclusive) {
 /* returns a string representation of the point in standard coordinate format */
 char* tostringp(point* p) {
 	char* buffer = (char*) malloc(sizeof(char) * 256);
-	int buflen = sprintf(buffer, "(%lf, %lf, %lf)", p->x, p->y, p->z);
+	int buflen = sprintf(buffer, "(%.2lf, %.2lf, %.2lf)", p->x, p->y, p->z);
 	buffer = realloc(buffer, sizeof(char) * buflen);
 	return buffer;
 }

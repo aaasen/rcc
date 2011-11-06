@@ -67,4 +67,6 @@ rtree* defaultrt();
 
 void freert(rtree* tree); /* Recursively free the rtree and all of its nodes */
 
+void tostringrt(rtree* tree); /* Recursively print all points in the rtree */
+
 #endif

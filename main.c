@@ -43,13 +43,15 @@ int main(int argc, char *argv[]) {
 		printf("Standard Deviation sub2: %f\n", sdevrt(rrt->sub2, NULL, NULL));
 	}
 	p = (point*)malloc(sizeof(point));
-	setxyz(p, 0, 0, 255);
+	setxyz(p, 7, 1, 255);
 	rtree* stree = pfindrt(rrt, p);
 	if (stree){
-		printf("Found point with z = %.2f in an rtree containing %d points.\n", p->z, stree->pa.len);
+		printf("Found point %s in an rtree containing %d points.\n", tostringp(p), stree->pa.len);
 	} else {
-		printf("Did not find point with z = %.2f in the tree.\n", p->z);
+		printf("Did not find point %s in the tree.\n", tostringp(p));
 	}
+
+	tostringrt(rrt);
 	//tostringpa(&rrt->sub2->pa);
  	rect* r1 = malloc(sizeof(rect));
  	/* point* r1p1 = malloc(sizeof(point)); */

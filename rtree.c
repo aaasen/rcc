@@ -26,7 +26,7 @@
 #include "rect.h"
 #include "parray.h"
 
-static int maxsdev = 13; /* Maximum standard deviation within each rtree */
+static int maxsdev = 1; /* Maximum standard deviation within each rtree */
 
 typedef struct rtree{
 	parray pa; /* array of points in the rtree */
@@ -49,7 +49,7 @@ void rebuildrt(rtree * tree);
 rtree* pfindrt(rtree* tree, point * p);
 parray* rectqrt(rtree* tree, rect* qbox);
 rtree* defaultrt();
-
+void tostringrt(rtree* tree);
 
 /* Add the specified point to the specified rtree
  * Can not resize the rtree, only expand it. e.g. a large prism has been predefined
@@ -323,4 +323,16 @@ void freert(rtree* tree){
 	  freert(tree->sub2);
 	}
 	free(tree);
+}
+
+void tostringrt(rtree* tree){
+	if (tree->leaf){
+		tostringpa(&tree->pa);
+	} else {
+		printf("{\n");
+		tostringrt(tree->sub1);
+		printf("----------\n");
+		tostringrt(tree->sub2);
+		printf("}\n");
+	}
 }
