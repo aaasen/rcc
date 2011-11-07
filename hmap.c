@@ -126,6 +126,7 @@ int rcctobmp(char* rccfile, char* bmpfile){
     lsize = sizeof(crect); /* This will have to be derived from the header */
 
     /* Converts the data from the rcc into pixels */
+    data = malloc(lsize*head->xpix*head->ypix);
     while (!feof(compressed)){
     	chead = malloc(sizeof(RCC_CHANNEL_HEADER));
     	rchead(compressed, chead);
@@ -139,6 +140,7 @@ int rcctobmp(char* rccfile, char* bmpfile){
     			}
     		}
     	}
+      free(chead);
     }
     
     /* Save to BMP */
