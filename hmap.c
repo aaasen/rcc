@@ -9,6 +9,44 @@
 #include "point.h"
 #include "qdbmp.h"
 
+typedef struct{
+	unsigned long mnum; /* Magic number, always 0xFE1A710 */
+	unsigned long checksum;
+    unsigned long long flags;
+    unsigned int channelspec;
+    unsigned int xpix; /* Length of image x axis */
+    unsigned int ypix; /* Length of image y axis */
+    unsigned short coldepth; /* Color depth in bytes */
+} RCC_HEADER;
+
+typedef struct{
+	/*
+	 * TODO The color variable sizes will need to be changed to handle images
+	 * with more color depth at some point, so this struct is temporary
+	 */
+	unsigned short r; /* Red color bitmask */
+	unsigned short g;
+	unsigned short b;
+	unsigned short a;
+	unsigned long cbsize; /* Size of channel body */
+} RCC_CHANNEL_HEADER;
+
+/* We need this because we can't save to the bitmap one color value at a time */
+typedef struct{
+	unsigned short r;
+	unsigned short g;
+	unsigned short b;
+} pixel;
+
+/* Private 2D rectangle struct with color value */
+typedef struct{
+	unsigned int x1; /* 1 = top left, 2 = bottom right */
+	unsigned int y1;
+	unsigned int x2;
+	unsigned int y2;
+	unsigned short color;
+} crect;
+
 /* Load the bmp image into r, g, and b rtrees. Return true if successful */
 int loadbmp(char* file, rtree* r, rtree* g, rtree* b){
 	point* rpoint, *gpoint, *bpoint;
@@ -62,4 +100,73 @@ int loadbmp(char* file, rtree* r, rtree* g, rtree* b){
 
 	BMP_Free(img);
 	return 1;
+}
+
+/* Convert rcc file directly to bitmap, returns true if successful */
+int rcctobmp(char* rccfile, char* bmpfile){
+	/* Do I really have to define all of the variables at the top? */
+    FILE* compressed ;
+    BMP* target;
+    RCC_HEADER* head;
+    unsigned int lsize; /* Size of the file's representation of an rtree leaf */
+    RCC_CHANNEL_HEADER* chead; /* Channel header, reused for each channel */
+    crect* leaf; /* Rectangle used for reading each node within the for loop */
+    pixel* data; /* Raw data to be saved to bitmap, stored x, y */
+    int i, j, k; /* Iterators */
+    
+    compressed = fopen(rccfile, "r");
+    if (!compressed){
+        return 0; /* Unable to open rcc file */
+    }
+    head = malloc(sizeof(RCC_HEADER));
+    if (!rrcchead(compressed, head)){
+    	return 0;
+    }
+    
+    lsize = sizeof(crect); /* This will have to be derived from the header */
+
+    /* Converts the data from the rcc into pixels */
+    while (!feof(compressed)){
+    	chead = malloc(sizeof(RCC_CHANNEL_HEADER));
+    	rchead(compressed, chead);
+    	for (i = 0; i < chead->cbsize; i += lsize){
+    		fread(leaf, lsize, 1, compressed);
+    		for (j = leaf->x1; j <= leaf->x2; j++){
+    			for (k = leaf->y1; k <= leaf->y2; j++){
+    				data[i*head->xpix + j].r+=chead->r & leaf->color;
+    				data[i*head->xpix + j].g+=chead->g & leaf->color;
+    				data[i*head->xpix + j].b+=chead->b & leaf->color;
+    			}
+    		}
+    	}
+    }
+    
+    /* Save to BMP */
+    tBMP_CREATE(target, head->xpix, head->ypix, head->coldepth);
+    k = 0;
+    for (i = 0; i < head->xpix; i++){
+    	for (j = 0; j < head->ypix; j++){
+    		BMP_SetPixelRGB(target, i, j, data[k].r, data[k].g, data[k].b);
+    		k++;
+    	}
+    }
+    BMP_WriteFile(target, bmpfile);
+    
+    BMP_Free(target);
+    return 1;
+}
+
+/* Reads the header of an rcc file, returns true if the file is valid */
+int rrcchead(FILE* compressed, RCC_HEADER* header){
+	fread(header, sizeof(RCC_HEADER), 1, compressed);
+   	if (header->mnum != 0xFE1A710){
+    	return 0; /* File not an rcc file */
+    }
+    /* TODO check the checksum */
+    return 1;
+}
+
+/* Read a channel header starting at the position indicator of the given file */
+void rchead(FILE* compressed, RCC_CHANNEL_HEADER* header){
+	fread(header, sizeof(RCC_CHANNEL_HEADER), 1, compressed);
 }
