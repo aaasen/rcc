@@ -144,7 +144,7 @@ int rcctobmp(char* rccfile, char* bmpfile){
     }
     
     /* Save to BMP */
-    tBMP_CREATE(target, head->xpix, head->ypix, head->coldepth);
+    target = BMP_Create(head->xpix, head->ypix, head->coldepth);
     k = 0;
     for (i = 0; i < head->xpix; i++){
     	for (j = 0; j < head->ypix; j++){
