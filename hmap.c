@@ -10,7 +10,7 @@
 #include "qdbmp.h"
 
 typedef struct{
-	unsigned long mnum; /* Magic number, always 0xFE1A710 */
+	unsigned long mnum; /* Magic number, always 0xA9D7FABA */
 	unsigned long checksum;
     unsigned long long flags;
     unsigned int channelspec;
@@ -161,7 +161,7 @@ int rcctobmp(char* rccfile, char* bmpfile){
 /* Reads the header of an rcc file, returns true if the file is valid */
 int rrcchead(FILE* compressed, RCC_HEADER* header){
 	fread(header, sizeof(RCC_HEADER), 1, compressed);
-   	if (header->mnum != 0xFE1A710){
+   	if (header->mnum != 0xA9D7FABA){
     	return 0; /* File not an rcc file */
     }
     /* TODO check the checksum */
