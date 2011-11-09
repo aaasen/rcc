@@ -40,5 +40,19 @@ int main(int argc, char *argv[]) {
 
 	tostringrt(rrt);
 
+	parray* testpa = defaultpa();
+	point* testp1 = (point*) malloc(sizeof(point));
+	setxyz(testp1, 0, 0, 0);
+	point* testp2 = (point*) malloc(sizeof(point));
+	setxyz(testp2, 10, 10, 10);
+	point* testp3 = (point*) malloc(sizeof(point));
+	setxyz(testp3, 5, 5, 5);
+	
+	addpa(testpa, testp1);
+	addpa(testpa, testp2);
+	addpa(testpa, testp3);
+
+	printrect(findmbr(testpa));
+
 	return 0;
 }

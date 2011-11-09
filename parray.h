@@ -9,7 +9,7 @@
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
-#include "point.h" 
+#include "point.h"
 
 typedef struct parray {
 	int len;

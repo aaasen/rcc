@@ -35,6 +35,9 @@ int pinr(rect* box, point* p);
 /* evaluates whether or not two rectangles overlap and returns true if they do and false if not */
 int rinr(rect* box1, rect* box2);
 
+/* calculates the minimum bounding rectangle (mbr) of the set of points */
+rect* findmbr(parray* pa);
+
 /* prints both coordinates of the rectangle */
 void printrect(rect* box);
 
