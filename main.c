@@ -38,7 +38,14 @@ int main(int argc, char *argv[]) {
 		exit(0);
 	}
 
-	tostringrt(rrt);
+	//if(rrt->leaf) printf("rtt is a leaf\n");
+	//tostringrt(rrt);
+	parray* rrtpa = getpointsrt(rrt);
+	printf("----points in rrt----\n");
+	tostringpa(rrtpa);
+	printf("----end point in rrt----\n");
+
+	resizert(rrt);
 
 	parray* testpa = defaultpa();
 	point* testp1 = (point*) malloc(sizeof(point));

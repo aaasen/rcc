@@ -49,6 +49,7 @@ void rebuildrt(rtree * tree);
 rtree* pfindrt(rtree* tree, point * p);
 parray* searchrt(rtree* tree, void* qshape, int (pinshape)(void*, point*), int (rinshape)(void*, rect*));
 parray* rsearchrt(rtree* tree, rect* qbox);
+parray* getpointsrt(rtree* tree);
 rtree* defaultrt();
 void tostringrt(rtree* tree);
 
@@ -61,17 +62,18 @@ rtree* putrt(rtree * tree, point * p){
 	if (!(tree->sub1 || tree->sub2)){
 		tree->leaf = 1;
 	}
-	if (p != NULL){
+	if (p){
 		if (tree->leaf){
 			addpa(&tree->pa, p);
 		} else {
-			/* Select the subtree that can contain the point with the least expansion, or
-			 * if both require the same expansion, add to the first.
-			 */
+			/* Select the subtree that can contain the point with the least expansion, or */
+			/* if both require the same expansion, add to the first. */
 
 			double rszsub1 = rszsum(&tree->sub1->mbr, p);
 			double rszsub2 = rszsum(&tree->sub2->mbr, p);
-			putrt(rszsub1 >= rszsub2 ? tree->sub1 : tree->sub2, p);
+			rtree* bestnode = rszsub1 >= rszsub2 ? tree->sub1 : tree->sub2;
+			putrt(bestnode, p);
+			
 		}
 	} else {
 	  perror("[Error]: putrt() passed a null point pointer");
@@ -101,10 +103,10 @@ void bputrt(rtree* tree, point* p, int n) {
 rtree* remrt(rtree* tree, point * p){
 	int i;
 
-	if (tree->sub1 == NULL && tree->sub2 == NULL){
+	if (!(tree->sub1 || tree->sub2)){
 		tree->leaf = 1;
 	}
-	if (p != NULL) {
+	if (p) {
 		if (tree->leaf){
 			for(i = 0; i < tree->pa.len; i++) {
 				if(peq(p, &tree->pa.points[i])) {
@@ -230,8 +232,21 @@ int subrt(rtree* tree){
 }
 
 /* Recursively resize the tree, return false if rebuilding might be necessary */
-int resizert(rtree * tree){
-	return 0;
+/* TODO: detect if rebuild is necessary */
+int resizert(rtree* tree){
+	if(tree) {
+		if(!(tree->sub1 || tree->sub2)) {
+			tree->leaf = 1;
+		}
+		
+		if(tree->leaf) {
+			tree->mbr = *findmbr(&tree->pa);
+		} else {
+			tree->mbr = *findmbr(getpointsrt(tree));
+			resizert(tree->sub1);
+			resizert(tree->sub2);
+		}
+	} return 1;
 }
 
 /* Recursively rebuild the entire tree, optimizing search time */
@@ -305,6 +320,7 @@ parray* searchrt(rtree* tree, void* qshape, int (pinshape)(void*, point*), int (
 				sub1buf = searchrt(tree->sub1, qshape, pinshape, rinshape);
 			}
 			if(tree->sub2 && rinshape(qshape, &tree->sub2->mbr)) {
+				sub2buf = searchrt(tree->sub2, qshape, pinshape, rinshape);
 			}
 			inquery = mergepa(sub1buf, sub2buf);
 		}
@@ -317,6 +333,14 @@ parray* searchrt(rtree* tree, void* qshape, int (pinshape)(void*, point*), int (
 /* returns an array of points which are in the query rectangle */
 parray* rsearchrt(rtree* tree, rect* qryrect) {
 	return searchrt(tree, qryrect, (void*) pinr, (void*) rinr);
+}
+
+/* recursively builds a parray containing the points in the given node and in all of its children */
+parray* getpointsrt(rtree* tree) {
+	if(tree) {
+		return tree->leaf ? &tree->pa : mergepa(getpointsrt(tree->sub1), getpointsrt(tree->sub2));
+	}
+	return NULL;
 }
 
 /* Allocate and assign everything necessary for a new leaf rtree */

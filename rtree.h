@@ -76,6 +76,9 @@ parray* rsearchrt(rtree* tree, rect* qbox);
 /* Allocate and assign everything necessary for a new leaf rtree */
 rtree* defaultrt();
 
+/* recursively builds a parray containing the points in the given node and in all of its children */
+parray* getpointsrt(rtree* tree);
+
 void freert(rtree* tree); /* Recursively free the rtree and all of its nodes */
 
 void tostringrt(rtree* tree); /* Recursively print all points in the rtree */
