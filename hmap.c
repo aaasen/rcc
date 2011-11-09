@@ -47,6 +47,14 @@ typedef struct{
 	unsigned short color;
 } crect;
 
+int loadbmp(char* file, rtree* r, rtree* g, rtree* b);
+int savebmp(char* file, rtree* r, rtree* g, rtree* b);
+int savercc(char* file, rtree* r, rtree* g, rtree* b);
+int rcctobmp(char* rccfile, char* bmpfile);
+int rrcchead(FILE* compressed, RCC_HEADER* header);
+void rchead(FILE* compressed, RCC_CHANNEL_HEADER* header);
+
+
 /* Load the bmp image into r, g, and b rtrees. Return true if successful */
 int loadbmp(char* file, rtree* r, rtree* g, rtree* b){
 	point* rpoint, *gpoint, *bpoint;
