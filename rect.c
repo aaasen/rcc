@@ -1,13 +1,14 @@
 /*
  * A basic rectanglular prism.
  * p1 is treated as the closer lower left point (lower values)and
- * p2 is treated as the further upper right point (higher values) 
+ * p2 is treated as the further upper right point (higher values)
  * where the origin is at the close bottom left.
  */
 
 #include <stdlib.h>
 #include <math.h>
 #include "point.h"
+#include "parray.h"
 
 typedef struct rect {
 	point p1; /* Corner of prism */
@@ -21,6 +22,7 @@ double rszaxis(double center, double width, double point);
 double rszsum(rect* box, point* p);
 int pinr(rect* box, point* p);
 int rinr(rect* box1, rect* box2);
+void printrect(rect* box);
 
 /* get the width, height and depth of the rectangle, respectively */
 double getwr(rect* box) {
@@ -57,13 +59,21 @@ double rszsum(rect* box, point* p) {
 /* returns true if the point is inside the rectangle and false (0) if not */
 int pinr(rect* box, point* p) {
 	return ((pinrng(box->p1.x, box->p2.x, p->x, 1)) &&
-			(pinrng(box->p1.y, box->p2.y, p->y, 1)) &&
-			(pinrng(box->p1.z, box->p2.z, p->z, 1))) ? 1 : 0;
+		(pinrng(box->p1.y, box->p2.y, p->y, 1)) &&
+		(pinrng(box->p1.z, box->p2.z, p->z, 1)));
 }
 
 /* evaluates whether or not two rectangles overlap and returns true if they do and false if not */
 int rinr(rect* box1, rect* box2) {
-	return ((pinrng(box1->p1.x, box1->p2.x, box2->p1.x, 1) || pinrng(box1->p1.x, box1->p2.x, box2->p2.x, 1)) &&
-			(pinrng(box1->p1.y, box1->p2.y, box2->p1.y, 1) || pinrng(box1->p1.y, box1->p2.y, box2->p2.y, 1)) &&
-			(pinrng(box1->p1.z, box1->p2.z, box2->p1.z, 1) || pinrng(box1->p1.z, box1->p2.z, box2->p2.z, 1))) ? 1 : 0;
+	return pinr(box1, &box2->p1) || pinr(box1, &box2->p2) || pinr(box2, &box1->p1) || pinr(box2, &box1->p2);
 }
+
+rect* findmbr(parray* pa) {
+	return NULL;
+}
+
+/* prints both coordinates of the rectangle */
+void printrect(rect* box) {
+	printf("p1: %s\np2: %s\n", tostringp(&box->p1), tostringp(&box->p2));
+}
+

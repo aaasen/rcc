@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "point.h"
+#include "parray.h"
 
 #ifndef RECT_H
 #define RECT_H
@@ -33,5 +34,8 @@ int pinr(rect* box, point* p);
 
 /* evaluates whether or not two rectangles overlap and returns true if they do and false if not */
 int rinr(rect* box1, rect* box2);
+
+/* prints both coordinates of the rectangle */
+void printrect(rect* box);
 
 #endif
