@@ -59,8 +59,19 @@ void rebuildrt(rtree * tree);/* Recursively rebuild the entire tree, optimizing 
 
 rtree* pfindrt(rtree * tree, point * p);/* Recursively search through the rtree to find the rtree containing the specified point. Return null if the point is not in the tree. Assumes the rtree is properly resized */
 
-/* returns an array of points which are in the query box */
-parray* rectqrt(rtree* tree, rect* qbox);
+/* searchrt() is an extensible search function for rtrees */
+/* it returns an array of points which are contained in qshape (which can be any, preferably geometric, struct) */
+/* searchrt() requires two function pointers: */
+/* 		-pinshape(), or point in shape, takes a struct which is the same type as qshape and a point* as arguments */
+/*			and returns 1 if the point is in the shape and anything else if it is not */
+/*		-rinshape(), or rectangle in shape, is identical in behavior to pinshape() */
+/*			but takes a rect* instead of a point* as its second argument */
+/* using these functions searchrt() recursively traverses the rtree and compiles an array of points */
+/* which are enclosed by the given shape */
+parray* searchrt(rtree* tree, void* qshape, int (pinshape)(void*, point*), int (rinshape)(void*, rect*));
+
+/* returns an array of points which are in the query rectangle */
+parray* rsearchrt(rtree* tree, rect* qbox);
 
 /* Allocate and assign everything necessary for a new leaf rtree */
 rtree* defaultrt();

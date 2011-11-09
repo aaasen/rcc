@@ -47,7 +47,8 @@ int subrt(rtree * tree);
 int resizert(rtree * tree);
 void rebuildrt(rtree * tree);
 rtree* pfindrt(rtree* tree, point * p);
-parray* rectqrt(rtree* tree, rect* qbox);
+parray* searchrt(rtree* tree, void* qshape, int (pinshape)(void*, point*), int (rinshape)(void*, rect*));
+parray* rsearchrt(rtree* tree, rect* qbox);
 rtree* defaultrt();
 void tostringrt(rtree* tree);
 
@@ -272,45 +273,59 @@ rtree* pfindrt(rtree* tree, point * p){
 	return NULL;/* Returned if error occurs, or if point is not found */
 }
 
-/* returns an array of points which are in the query box */
-parray* rectqrt(rtree* tree, rect* qbox) {
+/* searchrt() is an extensible search function for rtrees */
+/* it returns an array of points which are contained in qshape (which can be any, preferably geometric, struct) */
+/* searchrt() requires two function pointers: */
+/* 		-pinshape(), or point in shape, takes a struct which is the same type as qshape and a point* as arguments */
+/*			and returns 1 if the point is in the shape and anything else if it is not */
+/*		-rinshape(), or rectangle in shape, is identical in behavior to pinshape() */
+/*			but takes a rect* instead of a point* as its second argument */
+/* using these functions searchrt() recursively traverses the rtree and compiles an array of points */
+/* which are enclosed by the given shape */
+parray* searchrt(rtree* tree, void* qshape, int (pinshape)(void*, point*), int (rinshape)(void*, rect*)) {
 	int i;
-	parray* inquery = (parray*) malloc(sizeof(parray)); //parray that contains all points in the query box
-	inquery->len = 0; //set this to 0 to override residual memory gook (e.g. 1230812398264)
-	
+	parray* inquery; //parray that contains all points in the query box
+	inquery = defaultpa();
+
 	if (!tree->sub1 && !tree->sub2) { //logic check
 		tree->leaf = 1;
 	}
-	if (tree && qbox) { //make sure arguments aren't null
-		if(tree->leaf) { //if leaf iterate through and add all points that are in the qbox to inquery
+	if (tree && qshape) { //make sure arguments aren't null
+		if(tree->leaf) { //if leaf iterate through and add all points that are in the qshape to inquery
 			for(i = 0; i < tree->pa.len; i++) {
-				if(pinr(qbox, &tree->pa.points[i])) {
+				if(pinshape(qshape, &tree->pa.points[i])) {
 					addpa(inquery, &tree->pa.points[i]);
 				}
 			}
+			printf("leaf node\n");
 		} else { //if not leaf recurse through child nodes and return sum of that
-			parray* sub1buf;
-			parray* sub2buf;
-			if(rinr(&tree->sub1->mbr, qbox)) {
-				parray* sub1buf = rectqrt(tree->sub1, qbox);
+			parray* sub1buf = NULL;
+			parray* sub2buf = NULL;
+			if(tree->sub1 && rinshape(qshape, &tree->sub1->mbr)) {
+				sub1buf = searchrt(tree->sub1, qshape, pinshape, rinshape);
 			}
-			if(rinr(&tree->sub2->mbr, qbox)) {
-				parray* sub2buf = rectqrt(tree->sub2, qbox);
+			if(tree->sub2 && rinshape(qshape, &tree->sub2->mbr)) {
 			}
 			inquery = mergepa(sub1buf, sub2buf);
 		}
 		return inquery;
 	}
 	return NULL; //if program flows to here some arguments are null
+	printf("searchrt (or relative) passed null arguments\n");
+}
+
+/* returns an array of points which are in the query rectangle */
+parray* rsearchrt(rtree* tree, rect* qryrect) {
+	return searchrt(tree, qryrect, (void*) pinr, (void*) rinr);
 }
 
 /* Allocate and assign everything necessary for a new leaf rtree */
 rtree* defaultrt(){
 	rtree* tree;
-	
+
 	tree = (rtree*)malloc(sizeof(rtree));
 	tree->leaf = 1;
-	defaultpa(&tree->pa);
+	tree->pa = *defaultpa();
 	return tree;
 }
 
