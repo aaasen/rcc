@@ -16,8 +16,9 @@ typedef struct parray {
 signed int addpa(parray* pa, point* p);
 signed int rempa(parray* pa, point* p);
 parray* mergepa(parray* pa1, parray* pa2);
-size_t lenpa(parray* pa);
+int lenpa(parray* pa);
 void tostringpa(parray* pa);
+parray* defaultpa();
 
 /* adds a point to the array */
 signed int addpa(parray* pa, point* p) {
@@ -47,18 +48,26 @@ signed int rempa(parray* pa, point* p) {
 
 /* returns a parray that contains the contents of both arguments */
 parray* mergepa(parray* pa1, parray* pa2) {
-	parray* sumpa = malloc(sizeof(parray));
+	parray* sumpa;
+	
+	sumpa = defaultpa();
 
-	sumpa->len = pa1->len + pa2->len;
-	sumpa->points = (point*) realloc(sumpa->points, sizeof(point) * sumpa->len);
-	memcpy(sumpa->points, pa1->points, pa1->len * sizeof(point));
-	memcpy(&sumpa->points[pa1->len], pa2->points, pa2->len * sizeof(point));
+	if (pa1 && pa2) {
+		sumpa->len = pa1->len + pa2->len;
+		sumpa->points = (point*) malloc(sizeof(point) * sumpa->len);
+		memcpy(sumpa->points, pa1->points, pa1->len * sizeof(point));
+		memcpy(&sumpa->points[pa1->len], pa2->points, pa2->len * sizeof(point));
+	} else if (!(pa1 || pa2)) {
+		return defaultpa();
+	} else {
+		return pa1 ? pa1 : pa2;
+	}
 	
 	return sumpa;
 }
 
 /* returns the number of points in the array (parray.len) */
-size_t lenpa(parray* pa) {
+int lenpa(parray* pa) {
 	return pa->len;
 }
 
@@ -67,11 +76,13 @@ size_t lenpa(parray* pa) {
 void tostringpa(parray* pa) {
 	int i;
 	for(i = 0; i < pa->len; i++) {
-		printf("%s\n", tostringp(&pa->points[i]));
+		printf("[%d]: %s\n", i, tostringp(&pa->points[i]));
 	}
 }
 
-void defaultpa(parray* pa){
+parray* defaultpa(){
+	parray* pa = (parray*)malloc(sizeof(parray));
 	pa->len = 0;
 	pa->points = (point*)malloc(sizeof(point));
+	return pa;
 }

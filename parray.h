@@ -23,10 +23,10 @@ signed int rempa(parray* pa, point* p);
 /* returns a parray that contains the contents of both arguments */
 parray* mergepa(parray* pa1, parray* pa2);
 /* returns the number of points in the array (parray.len) */
-size_t lenpa(parray* pa);
+int lenpa(parray* pa);
 /* prints the coordinates of all points in the parray */
 void tostringpa(parray* pa);
-/* Set len to 0 and initialize points */
-void defaultpa(parray* pa);
+/* Return an initialized parray */
+parray* defaultpa();
 
 #endif
