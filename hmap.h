@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "rtree.h"
 #include "point.h"
 #include "qdbmp.h"
@@ -15,34 +16,32 @@
 #define HMAP_H_
 
 typedef struct{
-	unsigned long mnum; /* Magic number, always 0xFE1A710 */
-	unsigned long checksum;
-    unsigned long long flags;
-    unsigned int channelspec;
-    unsigned int xpix; /* Length of image x axis */
-    unsigned int ypix; /* Length of image y axis */
-    unsigned short coldepth; /* Color depth in bytes */
- } RCC_HEADER;
+	uint32_t mnum; /* Magic number, always 0xA9D7FABA */
+	uint32_t checksum;
+    uint64_t flags;
+    uint16_t channelspec;
+    uint16_t xpix; /* Length of image x axis */
+    uint16_t ypix; /* Length of image y axis */
+    uint8_t coldepth; /* Color depth in bytes */
+} RCC_HEADER;
 
 typedef struct{
 	/*
-	 * The color variable sizes will need to be changed to handle images with
-	 * more color depth at some point, so this struct is temporary
+	 * TODO The color variable sizes will need to be changed to handle images
+	 * with more color depth at some point, so this struct is temporary
 	 */
-	unsigned short r; /* Red color bitmask */
-	unsigned short g;
-	unsigned short b;
-	unsigned short a;
-	unsigned long cbsize; /* Size of channel body */
+	uint8_t r; /* Red color bitmask */
+	uint8_t g;
+	uint8_t b;
+	uint8_t a;
+	uint32_t cbsize; /* Size of channel body */
 } RCC_CHANNEL_HEADER;
 
+/* We need this because we can't save to the bitmap one color value at a time */
 typedef struct{
-	unsigned int x;
-	unsigned int y;
-	unsigned int r;
-	unsigned int g;
-	unsigned int b;
-	unsigned int a;
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
 } pixel;
 	
 
@@ -63,6 +62,9 @@ int rrcchead(FILE* compressed, RCC_HEADER* header);
 
 /* Reads a channel header from an rcc file */
 void rchead(FILE* compressed, RCC_CHANNEL_HEADER* header);
+
+/* Save an individual channel to a file, returns 1 if successful, 0 otherwise*/
+int saverccchannel(char* file, rtree* r);
 
 
 #endif

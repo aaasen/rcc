@@ -5,18 +5,18 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "rtree.h"
 #include "point.h"
 #include "qdbmp.h"
 
 typedef struct{
-	unsigned long mnum; /* Magic number, always 0xA9D7FABA */
-	unsigned long checksum;
-    unsigned long long flags;
-    unsigned int channelspec;
-    unsigned int xpix; /* Length of image x axis */
-    unsigned int ypix; /* Length of image y axis */
-    unsigned short coldepth; /* Color depth in bytes */
+	uint32_t mnum; /* Magic number, always 0xA9D7FABA */
+	uint32_t checksum;
+    uint64_t flags;
+    uint16_t channelspec;
+    uint16_t xpix; /* Length of image x axis */
+    uint16_t ypix; /* Length of image y axis */
 } RCC_HEADER;
 
 typedef struct{
@@ -24,27 +24,28 @@ typedef struct{
 	 * TODO The color variable sizes will need to be changed to handle images
 	 * with more color depth at some point, so this struct is temporary
 	 */
-	unsigned short r; /* Red color bitmask */
-	unsigned short g;
-	unsigned short b;
-	unsigned short a;
-	unsigned long cbsize; /* Size of channel body */
+	uint8_t r; /* Red color bitmask */
+	uint8_t g;
+	uint8_t b;
+	uint8_t a;
+	uint8_t depth;
+	uint32_t cbsize; /* Size of channel body */
 } RCC_CHANNEL_HEADER;
 
 /* We need this because we can't save to the bitmap one color value at a time */
 typedef struct{
-	unsigned short r;
-	unsigned short g;
-	unsigned short b;
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
 } pixel;
 
 /* Private 2D rectangle struct with color value */
 typedef struct{
-	unsigned int x1; /* 1 = top left, 2 = bottom right */
-	unsigned int y1;
-	unsigned int x2;
-	unsigned int y2;
-	unsigned short color;
+	uint16_t x1; /* 1 = top left, 2 = bottom right */
+	uint16_t y1;
+	uint16_t x2;
+	uint16_t y2;
+	uint8_t color;
 } crect;
 
 int loadbmp(char* file, rtree* r, rtree* g, rtree* b);
@@ -53,6 +54,7 @@ int savercc(char* file, rtree* r, rtree* g, rtree* b);
 int rcctobmp(char* rccfile, char* bmpfile);
 int rrcchead(FILE* compressed, RCC_HEADER* header);
 void rchead(FILE* compressed, RCC_CHANNEL_HEADER* header);
+int saverccchannel(char* file, rtree* r);
 
 
 /* Load the bmp image into r, g, and b rtrees. Return true if successful */
@@ -197,7 +199,7 @@ int rcctobmp(char* rccfile, char* bmpfile){
     FILE* compressed ;
     BMP* target;
     RCC_HEADER* head;
-    unsigned int lsize; /* Size of the file's representation of an rtree leaf */
+    uint16_t lsize; /* Size of the file's representation of an rtree leaf */
     RCC_CHANNEL_HEADER* chead; /* Channel header, reused for each channel */
     crect* leaf; /* Rectangle used for reading each node within the for loop */
     pixel* data; /* Raw data to be saved to bitmap, stored x, y */
@@ -248,7 +250,7 @@ int rcctobmp(char* rccfile, char* bmpfile){
 }
 
 /* Reads the header of an rcc file, returns true if the file is valid */
-int rrcchead(FILE* compressed, RCC_HEADER* header){
+int rrcchead(FILE* compressed, RCC_HEADER* header) {
 	fread(header, sizeof(RCC_HEADER), 1, compressed);
    	if (header->mnum != 0xA9D7FABA){
     	return 0; /* File not an rcc file */
@@ -258,6 +260,30 @@ int rrcchead(FILE* compressed, RCC_HEADER* header){
 }
 
 /* Read a channel header starting at the position indicator of the given file */
-void rchead(FILE* compressed, RCC_CHANNEL_HEADER* header){
+void rchead(FILE* compressed, RCC_CHANNEL_HEADER* header) {
 	fread(header, sizeof(RCC_CHANNEL_HEADER), 1, compressed);
+}
+
+/* Save an individual channel to a file, returns 1 if successful, 0 otherwise*/
+int saverccchannel(char* file, rtree* r) {
+	RCC_CHANNEL_HEADER* chanhead = malloc(sizeof(RCC_CHANNEL_HEADER));
+	chanhead->
+	
+	
+}
+
+/* Save the rtrees to the specified rcc file, return true if successful. */
+int savercc(char* file, rtree* r, rtree* g, rtree* b) {
+	int i;
+	RCC_HEADER* head = malloc(sizeof(RCC_HEADER));
+	
+	head->mnum = 0xA9D7FABA;
+	head->checksum = 0; 
+	head->flags = 0;
+	head->channelspec = 57344; /* First three bits of the 16 bit int */
+	head->xpix = abs(r->mbr.p2.x - r->mbr.p1.x);
+	head->ypix = abs(r->mbr.p2.y - r->mbr.p1.y);
+	fwrite(head, sizeof(RCC_HEADER), 1, file);
+	
+	
 }
