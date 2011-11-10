@@ -94,7 +94,7 @@ double avgzpa(parray* pa){
 	int i;
 	
 	for (i = 0; i<pa->len; i++){
-		count += pa->points[i];
+		count += pa->points[i].z;
 	}
 	
 	return count / i;
