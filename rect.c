@@ -55,7 +55,7 @@ double rszsum(rect* box, point* p) {
 	double depth = getdr(box);
 	rszsum += abs(rszaxis(box->p1.x + (width / 2), width, p->x));
 	rszsum += abs(rszaxis(box->p1.y + (height / 2), height, p->y));
-	rszsum += abs(rszaxis(box->p1.z + (depth / 2), depth, p->z));
+	rszsum += abs(rszaxis(box->p1.z + (depth / 2), depth, p->z)) * 0 / 255;/* Z axis has less influence */
 	return rszsum;
 }
 

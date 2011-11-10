@@ -90,9 +90,13 @@ parray* createpa() {
 /* prints the coordinates of all points in the parray */
 void printpa(parray* pa) {
 	int i;
-	for(i = 0; i < pa->len; i++) {
-		printf("parray[%d]%s\n", i, tostringp(&pa->points[i]));
+	
+	count = 0;
+	for (i = 0; i<pa->len; i++){
+		count += pa->points[i].z;
+		/* printf("Point z: %.2f\n", pa->points[i].z); */
 	}
+	return count / i;
 }
 
 /* frees the parray and its substructs */

@@ -27,12 +27,12 @@
 #include "parray.h"
 #include "sphere.h"
 
-static int maxsdev = 30; /* Maximum standard deviation within each rtree */
+static int maxsdev = 10; /* Maximum standard deviation within each rtree */
 
 typedef struct rtree{
 	parray pa; /* array of points in the rtree */
 
-	rect mbr; /* Maximum Bounding Rectangle of the node */
+	rect mbr; /* Minimum Bounding Rectangle of the node */
 
 	int leaf;/* True if this tree is a leaf, false if a branch */
 	/* Possibly make into an n-child rtree, if faster */
@@ -175,6 +175,12 @@ int subrt(rtree* tree){
 	int i;
 	double sum1;
 	double sum2;
+	
+	if (!tree){
+		return;
+	}
+
+	resizert(tree);
 
 	if (tree->leaf){
 		max = (point*)malloc(sizeof(point));
@@ -355,6 +361,8 @@ rtree* creatert() {
 	tree = (rtree*) malloc(sizeof(rtree));
 	tree->leaf = 1;
 	tree->pa = *createpa();
+	setxyz(&tree->mbr.p1, 0, 0, 0);
+	setxyz(&tree->mbr.p2, 0, 0, 0);
 	return tree;
 }
 
@@ -381,5 +389,19 @@ void freert(rtree* tree) {
 			freert(tree->sub2);
 		}
 		free(tree);
+	}
+}
+
+void tostringrt(rtree* tree){
+
+	if (tree->leaf){
+		tostringpa(&tree->pa);
+	} else {
+		printf("{\n");
+		tostringrt(tree->sub1);
+		printf("----------\n");
+		tostringrt(tree->sub2);
+		printf("}\n");
+  
 	}
 }

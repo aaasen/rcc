@@ -110,24 +110,84 @@ int loadbmp(char* file, rtree* r, rtree* g, rtree* b){
 	return 1;
 }
 
+void rtavgpoints(rtree* rt, parray* pa){
+	int x, y;
+	point* p;
+	double avgz;
+
+	if (rt->leaf){
+		avgz = avgzpa(&rt->pa);
+
+		/* printf("mbr: %s, %s\n", tostringp(&rt->mbr.p1), tostringp(&rt->mbr.p2)); */
+		for (x = 0; x <= getwr(&rt->mbr); x++){
+			for (y = 0; y <= gethr(&rt->mbr); y++){
+			  p = (point*)malloc(sizeof(point));
+			  setxyz(p, x + rt->mbr.p1.x, y + rt->mbr.p1.y, avgz);
+			  addpa(pa, p);
+			  /* printf("POINT ADDED, z = %.2f\n", p->z); */
+			}
+		}
+		
+	} else {
+		rtavgpoints(rt->sub1, pa);
+		rtavgpoints(rt->sub2, pa);
+	}
+}
+
 /* Save the rtrees to the specified bitmap file, return true if successful. */
 int savebmp(char* file, rtree* r, rtree* g, rtree* b){
 	BMP* img;
-	FILE* newfile;
-	pixel* data;
-	parray *rpa, *gpa, *bpa;	
-	int i;
+	FILE* nepwfile;
+	pixel* pixels;
+	pixel* pixeltemp;/* Temporary pixel for drawing to the BMP */
+	point* p;
+	parray *rpa, *gpa, *bpa;
+	int i, x, y;
+	int w, h;
+
+	w = getwr(&r->mbr) + 1;
+	h = gethr(&r->mbr) + 1;
+
+	img = BMP_Create(w, h, 32);
+
+	rpa = defaultpa();
+	gpa = defaultpa();
+	bpa = defaultpa();
 	
-	img = BMP_Create(getwr(&r->mbr), gethr(&r->mbr), getdr(&r->mbr));
-	rpa = getpointsrt(r);
-	gpa = getpointsrt(g);
-	bpa = getpointsrt(b);
+	printf("W = %d -- H = %d\n", w, h);
+
+	rtavgpoints(r, rpa);
+	rtavgpoints(g, gpa);
+	rtavgpoints(b, bpa);
 	
+	pixels = (pixel*)malloc(sizeof(pixel) * w * h);
+
+	/* Get all pixel values */
 	for (i = 0; i < rpa->len; i++){
-		BMP_SetPixelRGB(img, rpa->points[i].x, rpa->points[i].y, avgzpa(rpa), avgzpa(gpa), avgzpa(bpa));
+		p = &rpa->points[i];
+		pixels[(int)p->x * h + (int)p->y].r = (int)p->z;
+	}
+	for (i = 0; i < gpa->len; i++){
+		p = &gpa->points[i];
+		pixels[(int)p->x * h + (int)p->y].g = (int)p->z;
+	}
+	for (i = 0; i < bpa->len; i++){
+		p = &bpa->points[i];
+		pixels[(int)p->x * h + (int)p->y].b = (int)p->z;
 	}
 	
-	newfile = fopen(file, "r");
+	/* Draw the BMP */
+	for (i = 0; i < w * h; i++){
+		pixeltemp = &pixels[i];
+		x = (int)(i % h);
+		y = (int)(i / h);
+		BMP_SetPixelRGB(img, y, x,pixeltemp->r, pixeltemp->g, pixeltemp->b);
+	}
+
+	BMP_WriteFile(img, file);
+	BMP_CHECK_ERROR(stdout, -1);
+	BMP_Free(img);
+	return 1;
 }
 
 

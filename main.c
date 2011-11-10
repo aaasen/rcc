@@ -6,6 +6,7 @@
 #include "sphere.h"
 
 #define TESTFILE "testing/checker.bmp"
+#define OUTFILE "out.bmp"
 
 int main(int argc, char *argv[]) {
 	int i;
@@ -40,7 +41,8 @@ int main(int argc, char *argv[]) {
 	}
 
 	//if(rrt->leaf) printf("rtt is a leaf\n");
-	tostringrt(rrt);
+	//tostringrt(brt);
+	savebmp(OUTFILE, rrt, grt, brt);
 	parray* rrtpa = getpointsrt(rrt);
 /*	printf("----points in rrt----\n");*/
 /*	tostringpa(rrtpa);*/

@@ -10,7 +10,7 @@ typedef struct _BMP_Header
 	UINT		FileSize;			/* Size of the BMP file in bytes */
 	USHORT		Reserved1;			/* Reserved */
 	USHORT		Reserved2;			/* Reserved */
-	UINT		DataOffset;			/* Offset of image data relative to the file's start */
+	UINT		DataOffset;			/* Offset of image data relative to the file' start */
 	UINT		HeaderSize;			/* Size of the header in bytes */
 	UINT		Width;				/* Bitmap's width */
 	UINT		Height;				/* Bitmap's height */
