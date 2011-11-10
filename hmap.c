@@ -150,9 +150,9 @@ int savebmp(char* file, rtree* r, rtree* g, rtree* b){
 
 	img = BMP_Create(w, h, 32);
 
-	rpa = defaultpa();
-	gpa = defaultpa();
-	bpa = defaultpa();
+	rpa = createpa();
+	gpa = createpa();
+	bpa = createpa();
 	
 	printf("W = %d -- H = %d\n", w, h);
 
