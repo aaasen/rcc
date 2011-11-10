@@ -2,8 +2,12 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 #include "point.h"
 #include "rect.h"
+
+#define min(a, b) (((a) < (b)) ? (a) : (b))
+#define max(a, b) (((a) > (b)) ? (a) : (b))
 
 typedef struct {
 	point* centbase; /* Center of the base circle */
@@ -11,19 +15,26 @@ typedef struct {
 	double radius;
 } cylinder;
 
+int pincyl(cylinder* cyl, point* p);
+int rincyl(cylinder* cyl, rect* r);
+int lintc(point* p1, point* p2, point* center, double radius);
+cylinder* createcyl(double x, double y, double z, double height, double radius);
+rect* getcylmbr(cylinder* cyl);
+void printcyl(cylinder* cyl);
+void freecyl(cylinder* cyl);
+
 /* returns true if the given point is in the cylinder */
 int pincyl(cylinder* cyl, point* p){
 	return distp(cyl->centbase, p) <= cyl->radius && p->z >= cyl->centbase->z && p->z <= cyl->height + cyl->centbase->z;
 }
 
-/*/* returns true if the given rectangle and cylinder overlap */
-/*int rincyl(cylinder* cyl, rect* r){*/
-/*	if (cyl){*/
-/*		return rinr(r, getcylmbr(cyl)) /* the minimum bounding rectangle must overlap with the search rectangle */
-/*			   && (lintc(r->p1.x, r->p2.x, cyl->centbase, cyl->radius) /* check if any lines intersect the circle */
-/*			       || lintc(r->p1.x, r->p2.x, cyl->centbase, cyl->radius));*/
-/*	} return 0;*/
-/*}*/
+/* returns true if the given rectangle and cylinder overlap */
+int rincyl(cylinder* cyl, rect* r){
+	if (cyl){
+		return rinr(r, getcylmbr(cyl)) /* the minimum bounding rectangle must overlap with the search rectangle */
+			   && lintc(&r->p1, &r->p2, cyl->centbase, cyl->radius);/* check if any lines intersect the circle */
+	} return 0;
+}
 
 /*
  * checks if a line intersects a circle, line must be parallel to x or y axis, z values are ignored, this funtion is
@@ -31,8 +42,8 @@ int pincyl(cylinder* cyl, point* p){
  */
 int lintc(point* p1, point* p2, point* center, double radius){
 	return distp(p1, center) <= radius || distp(p2, center) <= radius /* if either endpoint is within the circle */
-		   || (Min(p1->x, p2->x) <= radius && Max(p1->x, p2->x) >= radius) /* if the line goes through the circle */
-		   || (Min(p1->y, p2->y) <= radius && Max(p1->y, p2->y) >= radius); /* the check must be made on both x and y */
+		   || (min(p1->x, p2->x) <= radius && max(p1->x, p2->x) >= radius) /* if the line goes through the circle */
+		   || (min(p1->y, p2->y) <= radius && max(p1->y, p2->y) >= radius); /* the check must be made on both x and y */
 }
 
 /* returns a pointer to a new cylinder with the given parameters */
@@ -44,13 +55,13 @@ cylinder* createcyl(double x, double y, double z, double height, double radius){
 	return new;
 }
 
-/*/* returns the minimum bounding rectangle of a cylinder */
-/*rect* getcylmbr(cylinder* cyl){*/
-/*	rect* r = malloc(sizeof(rect));*/
-/*	r->p1 = *createp(cyl->centbase->x - cyl->radius, cyl->centbase->y - cyl->radius, cyl->centbase->z);*/
-/*	r->p2 = *createp(cyl->centbase->x + cyl->radius, cyl->centbase->y + cyl->radius, cyl->centbase->z + cyl->height);*/
-/*	return r;*/
-/*}*/
+/* returns the minimum bounding rectangle of a cylinder */
+rect* getcylmbr(cylinder* cyl){
+	rect* r = malloc(sizeof(rect));
+	r->p1 = *createp(cyl->centbase->x - cyl->radius, cyl->centbase->y - cyl->radius, cyl->centbase->z);
+	r->p2 = *createp(cyl->centbase->x + cyl->radius, cyl->centbase->y + cyl->radius, cyl->centbase->z + cyl->height);
+	return r;
+}
 
 /* prints the cylinder */
 void printcyl(cylinder* cyl){

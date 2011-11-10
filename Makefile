@@ -10,8 +10,8 @@
 # make leak - make all and then run a full valgrind leak check on the output
 
 CFLAGS = -Wall -lm
-FILES = main.c rtree.c point.c rect.c qdbmp.c hmap.c parray.c sphere.c #cylinder.c
-OBJECTS = main.o rtree.o point.o rect.o qdbmp.o hmap.o parray.o sphere.o #cylinder.o
+FILES = main.c rtree.c point.c rect.c qdbmp.c hmap.c parray.c sphere.c cylinder.c
+OBJECTS = main.o rtree.o point.o rect.o qdbmp.o hmap.o parray.o sphere.o cylinder.o
 MAIN = main
 CC = gcc
 OUTPUT = rtree
