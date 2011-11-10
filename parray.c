@@ -98,7 +98,6 @@ void printpa(parray* pa) {
 		count += pa->points[i].z;
 		/* printf("Point z: %.2f\n", pa->points[i].z); */
 	}
-	return count / i;
 }
 
 /* frees the parray and its substructs */

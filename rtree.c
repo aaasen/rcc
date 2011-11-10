@@ -27,7 +27,7 @@
 #include "parray.h"
 #include "sphere.h"
 
-static int maxsdev = 20; /* Maximum standard deviation within each rtree */
+static int maxsdev = 50; /* Maximum standard deviation within each rtree */
 
 typedef struct rtree{
 	parray pa; /* array of points in the rtree */
