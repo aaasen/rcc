@@ -39,11 +39,11 @@ int main(int argc, char *argv[]) {
 	}
 
 	//if(rrt->leaf) printf("rtt is a leaf\n");
-	//tostringrt(rrt);
+	tostringrt(rrt);
 	parray* rrtpa = getpointsrt(rrt);
-	printf("----points in rrt----\n");
-	tostringpa(rrtpa);
-	printf("----end point in rrt----\n");
+/*	printf("----points in rrt----\n");*/
+/*	tostringpa(rrtpa);*/
+/*	printf("----end point in rrt----\n");*/
 
 	resizert(rrt);
 

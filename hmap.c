@@ -110,6 +110,27 @@ int loadbmp(char* file, rtree* r, rtree* g, rtree* b){
 	return 1;
 }
 
+/* Save the rtrees to the specified bitmap file, return true if successful. */
+int savebmp(char* file, rtree* r, rtree* g, rtree* b){
+	BMP* img;
+	FILE* file;
+	pixel* data;
+	parray *rpa, *gpa, *bpa;	
+	int i;
+	
+	img = BMP_Create(getwr(r->mbr), gethr(r->mbr), getdr(r->mbr));
+	rpa = getpointsrt(r);
+	gpa = getpointsrt(g);
+	bpa = getpointsrt(b);
+	
+	for (i = 0; i < rpa->len; i++){
+		BMP_SetPixelRGB(img, rpa->points[i].x, rpa->points[i].y, avgzpa(rpa->points), avgzpa(gpa->points), avgzpa(bpa->points))
+	}
+	
+	file = fopen(file, 'r');
+}
+
+
 /* Convert rcc file directly to bitmap, returns true if successful */
 int rcctobmp(char* rccfile, char* bmpfile){
 	/* Do I really have to define all of the variables at the top? */

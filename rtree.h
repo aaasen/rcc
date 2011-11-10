@@ -45,7 +45,9 @@ typedef struct rtree{
 
 rtree* putrt(rtree * tree, point * p);/* Add the specified point to the specified rtree */
 
-void bputrt(rtree * tree, point * p, int n);/* Efficiently bulk add all of the points in p */
+/* Efficiently bulk add all of the points in pa. */
+/* Fails if tree is not a leaf. */
+void bputrt(rtree* tree, parray* pa);
 
 rtree* remrt(rtree * tree, point * p);/* Recursively find and remove the point from the tree */
 

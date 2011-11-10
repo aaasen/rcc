@@ -28,5 +28,7 @@ int lenpa(parray* pa);
 void tostringpa(parray* pa);
 /* Return an initialized parray */
 parray* defaultpa();
+/* Return the average z value */
+double avgzpa(parray* pa);
 
 #endif

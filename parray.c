@@ -19,6 +19,7 @@ parray* mergepa(parray* pa1, parray* pa2);
 int lenpa(parray* pa);
 void tostringpa(parray* pa);
 parray* defaultpa();
+double avgzpa(parray* pa);
 
 /* adds a point to the array */
 signed int addpa(parray* pa, point* p) {
@@ -86,3 +87,16 @@ parray* defaultpa(){
 	pa->points = (point*)malloc(sizeof(point));
 	return pa;
 }
+
+/* Return the average z value */
+double avgzpa(parray* pa){
+	double count;
+	int i;
+	
+	for (i = 0; i<pa->len; i++){
+		count += pa->points[i];
+	}
+	
+	return count / i;
+}
+

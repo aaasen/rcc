@@ -26,7 +26,7 @@
 #include "rect.h"
 #include "parray.h"
 
-static int maxsdev = 1; /* Maximum standard deviation within each rtree */
+static int maxsdev = 30; /* Maximum standard deviation within each rtree */
 
 typedef struct rtree{
 	parray pa; /* array of points in the rtree */
@@ -40,7 +40,7 @@ typedef struct rtree{
 } rtree;
 
 rtree* putrt(rtree * tree, point * p);
-void bputrt(rtree* tree, point* p, int n);
+void bputrt(rtree* tree, parray* pa);
 rtree* remrt(rtree * tree, point * p);
 double sdevrt(rtree * tree, point * max, point * min);
 int subrt(rtree * tree);
@@ -51,6 +51,7 @@ parray* searchrt(rtree* tree, void* qshape, int (pinshape)(void*, point*), int (
 parray* rsearchrt(rtree* tree, rect* qbox);
 parray* getpointsrt(rtree* tree);
 rtree* defaultrt();
+void freert(rtree* tree);
 void tostringrt(rtree* tree);
 
 /* Add the specified point to the specified rtree
@@ -80,16 +81,14 @@ rtree* putrt(rtree * tree, point * p){
 	}
 }
 
-/*
- * Efficiently bulk add all of the points in p.
- * Fails if tree is not a leaf.
- */
-void bputrt(rtree* tree, point* p, int n) {
+/* Efficiently bulk add all of the points in pa. */
+/* Fails if tree is not a leaf. */
+void bputrt(rtree* tree, parray* pa) {
 	int i;
 	if (tree->leaf){
-		tree->pa.points = (point*)realloc(tree->pa.points, (n + tree->pa.len) * sizeof(point));
-		memcpy(&tree->pa.points[tree->pa.len], p, n * sizeof(point));
-		tree->pa.len += n;
+		tree->pa.points = (point*)realloc(tree->pa.points, (pa->len + tree->pa.len) * sizeof(point));
+		memcpy(&tree->pa.points[tree->pa.len], pa->points, pa->len * sizeof(point));
+		tree->pa.len += pa->len;
 		printf("%d points in tree", (int) tree->pa.len);
 		subrt(tree);
 		resizert(tree);
@@ -251,7 +250,12 @@ int resizert(rtree* tree){
 
 /* Recursively rebuild the entire tree, optimizing search time */
 void rebuildrt(rtree * tree) {
-
+	parray* allpoints = getpointsrt(tree);
+	
+	freert(tree->sub1);
+	freert(tree->sub2);
+	
+	bputrt(tree, allpoints);
 }
 
 /*
@@ -355,13 +359,15 @@ rtree* defaultrt(){
 
 /* Recursively free the rtree and all of its nodes */
 void freert(rtree* tree){
-	if (tree->leaf){
-		free(tree->pa.points);
-	} else {
-	  freert(tree->sub1);
-	  freert(tree->sub2);
+	if(tree) {
+		if (tree->leaf){
+			free(tree->pa.points);
+		} else {
+		  freert(tree->sub1);
+		  freert(tree->sub2);
+		}
+		free(tree);
 	}
-	free(tree);
 }
 
 void tostringrt(rtree* tree){
