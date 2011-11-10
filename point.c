@@ -45,7 +45,7 @@ int pinrng(double lower, double upper, double p, int inclusive) {
 	return inclusive ? (lower <= p) && (p <= upper) : (lower < p) && (p < upper);
 }
 
-/* calculates the distance between two points */
+/* calculates the distance between two points on the x/y plane */
 double distp(point* p1, point* p2) {
 	return sqrt(pow(p1->x - p2->x, 2) + pow(p1->y - p2->y, 2));
 }

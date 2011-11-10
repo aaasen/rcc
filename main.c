@@ -4,6 +4,7 @@
 #include "qdbmp.h"
 #include "hmap.h"
 #include "sphere.h"
+#include "cylinder.h"
 
 #define TESTFILE "testing/checker.bmp"
 #define OUTFILE "out.bmp"
