@@ -70,5 +70,14 @@ int main(int argc, char *argv[]) {
 	printsphr(newsphere);
 	printf("point %s in sphere\n", pinsphr(newsphere, testp3) ? "is" : "is not");
 
+	
+/* Testing code to put in main */
+	rect* r1 = createrect(.1, .1, 0, 1.9, 1.9, 1);
+	rect* r2 = createrect(.1, .1, 0, .2, .2, 1);
+	point* p1 = createp(1.0, 1.0, 1.0);
+	point* p2 = createp(10.0, 10.0, 10.0);
+	cylinder* cyl = createcyl(1.0, 1.0, 0.0, 2.0, 1.0);
+	printf("1:[%d],[%d], 0:[%d],[%d]\n", pincyl(cyl, p1), rincyl(cyl, r1), pincyl(cyl, p2), rincyl(cyl, r2));
+
 	return 0;
 }

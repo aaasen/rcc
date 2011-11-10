@@ -78,14 +78,3 @@ void freecyl(cylinder* cyl){
 	}
 }
 
-/* Testing code to put in main */
-/*	rect* r1 = malloc(sizeof(rect));*/
-/*	rect* r2 = malloc(sizeof(rect));*/
-/*	point* p1 = createp(1.0, 1.0, 1.0);*/
-/*	point* p2 = createp(10.0, 10.0, 10.0);*/
-/*	cylinder* cyl = createcyl(1.0, 1.0, 0.0, 2.0, 1.0);*/
-/*	r1->p1 = *createp(0.1, 0.1, 0.0);*/
-/*	r1->p2 = *createp(1.9, 1.9, 1.0);*/
-/*	r2->p1 = *createp(0.1, 0.1, 0.0);*/
-/*	r2->p2 = *createp(0.2, 0.2, 1.0);*/
-/*	printf("1:[%i],[%i], 0:[%i],[%i]", pincyl(cyl, p1), rincyl(cyl, r1), pincyl(cyl, p2), rincyl(cyl, r2));*/
