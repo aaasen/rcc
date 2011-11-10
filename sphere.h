@@ -9,7 +9,7 @@
 #include "rect.h"
 
 typedef struct sphere {
-	point* origin;
+	point* center;
 	double radius;
 } sphere;
 
@@ -18,6 +18,8 @@ int pinsphr(sphere* sphr, point* p);
 
 /* returns true if the given rectangle and sphere overlap */
 int rinsphr(sphere* sphr, rect* r);
+
+/* finds the smallest rectangular prism which encompasses the sphere */
 
 /* returns a pointer to a new sphere with the given parameters */
 sphere* createsphr(double x, double y, double z, double radius);

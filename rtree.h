@@ -75,14 +75,16 @@ parray* searchrt(rtree* tree, void* qshape, int (pinshape)(void*, point*), int (
 /* returns an array of points which are in the query rectangle */
 parray* rsearchrt(rtree* tree, rect* qbox);
 
-/* Allocate and assign everything necessary for a new leaf rtree */
-rtree* defaultrt();
-
 /* recursively builds a parray containing the points in the given node and in all of its children */
 parray* getpointsrt(rtree* tree);
 
-void freert(rtree* tree); /* Recursively free the rtree and all of its nodes */
+/* Allocate and assign everything necessary for a new leaf rtree */
+rtree* creatert();
 
-void tostringrt(rtree* tree); /* Recursively print all points in the rtree */
+/* Recursively print all points in the rtree */
+void printrt(rtree* tree);
+
+/* Recursively free the rtree and all of its nodes */
+void freert(rtree* tree);
 
 #endif

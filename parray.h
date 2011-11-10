@@ -18,17 +18,23 @@ typedef struct parray {
 
 /* adds a point to the array and returns -1 if any arguments are null */
 signed int addpa(parray* pa, point* p);
+
 /* performs a brute force search through the array and removes all matching points and returns -1 if any arguments are null*/
 signed int rempa(parray* pa, point* p);
+
 /* returns a parray that contains the contents of both arguments */
 parray* mergepa(parray* pa1, parray* pa2);
-/* returns the number of points in the array (parray.len) */
-int lenpa(parray* pa);
-/* prints the coordinates of all points in the parray */
-void tostringpa(parray* pa);
-/* Return an initialized parray */
-parray* defaultpa();
+
 /* Return the average z value */
 double avgzpa(parray* pa);
+
+/* return an initialized parray */
+parray* createpa();
+
+/* prints the coordinates of all points in the parray */
+void printpa(parray* pa);
+
+/* frees the parray and its substructs */
+void freepa(parray* pa);
 
 #endif

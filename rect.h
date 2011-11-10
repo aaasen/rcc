@@ -38,7 +38,13 @@ int rinr(rect* box1, rect* box2);
 /* calculates the minimum bounding rectangle (mbr) of the set of points */
 rect* findmbr(parray* pa);
 
+/* returns a pointer to a rectangle which is creating with the given arguments */
+rect* createrect(double x1, double y1, double z1, double x2, double y2, double z2);
+
 /* prints both coordinates of the rectangle */
 void printrect(rect* box);
+
+/* frees the rectangle and all substructs */
+void freerect(rect* box);
 
 #endif

@@ -23,7 +23,9 @@ double rszsum(rect* box, point* p);
 int pinr(rect* box, point* p);
 int rinr(rect* box1, rect* box2);
 rect* findmbr(parray* pa);
+rect* createrect(double x1, double y1, double z1, double x2, double y2, double z2);
 void printrect(rect* box);
+void freerect(rect* box);
 
 /* get the width, height and depth of the rectangle, respectively */
 double getwr(rect* box) {
@@ -92,8 +94,24 @@ rect* findmbr(parray* pa) {
 	return NULL;
 }
 
+/* returns a pointer to a rectangle which is creating with the given arguments */
+rect* createrect(double x1, double y1, double z1, double x2, double y2, double z2) {
+	rect* newrect = (rect*) malloc(sizeof(rect));
+
+	newrect->p1 = *createp(x1, y1, z1);
+	newrect->p2 = *createp(x2, y2, z2);
+	return newrect;
+}
+
 /* prints both coordinates of the rectangle */
-void printrect(rect* box) {
-	printf("p1: %s\np2: %s\n", tostringp(&box->p1), tostringp(&box->p2));
+void printrect(rect* box){
+	printf("rect(p1%sp2%s)\n", tostringp(&box->p1), tostringp(&box->p2));
+}
+
+/* frees the rectangle and all substructs */
+void freerect(rect* box) {
+	free(&box->p1);
+	free(&box->p2);
+	free(box);
 }
 

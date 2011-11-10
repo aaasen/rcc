@@ -51,9 +51,9 @@ rtree* pfindrt(rtree* tree, point * p);
 parray* searchrt(rtree* tree, void* qshape, int (pinshape)(void*, point*), int (rinshape)(void*, rect*));
 parray* rsearchrt(rtree* tree, rect* qbox);
 parray* getpointsrt(rtree* tree);
-rtree* defaultrt();
+rtree* creatert();
+void printrt(rtree* tree);
 void freert(rtree* tree);
-void tostringrt(rtree* tree);
 
 /* Add the specified point to the specified rtree
  * Can not resize the rtree, only expand it. e.g. a large prism has been predefined
@@ -305,7 +305,7 @@ rtree* pfindrt(rtree* tree, point * p){
 parray* searchrt(rtree* tree, void* qshape, int (pinshape)(void*, point*), int (rinshape)(void*, rect*)) {
 	int i;
 	parray* inquery; //parray that contains all points in the query box
-	inquery = defaultpa();
+	inquery = createpa();
 
 	if (!tree->sub1 && !tree->sub2) { //logic check
 		tree->leaf = 1;
@@ -349,36 +349,37 @@ parray* getpointsrt(rtree* tree) {
 }
 
 /* Allocate and assign everything necessary for a new leaf rtree */
-rtree* defaultrt(){
+rtree* creatert() {
 	rtree* tree;
-
-	tree = (rtree*)malloc(sizeof(rtree));
+	
+	tree = (rtree*) malloc(sizeof(rtree));
 	tree->leaf = 1;
-	tree->pa = *defaultpa();
+	tree->pa = *createpa();
 	return tree;
 }
 
+/* Recursively print all points in the rtree */
+void printrt(rtree* tree) {
+	if (tree->leaf) {
+		tostringpa(&tree->pa);
+	} else {
+		printf("{\n");
+		printrt(tree->sub1);
+		printf("----------\n");
+		printrt(tree->sub2);
+		printf("}\n");
+	}
+}
+
 /* Recursively free the rtree and all of its nodes */
-void freert(rtree* tree){
+void freert(rtree* tree) {
 	if(tree) {
 		if (tree->leaf){
 			free(tree->pa.points);
 		} else {
-		  freert(tree->sub1);
-		  freert(tree->sub2);
+			freert(tree->sub1);
+			freert(tree->sub2);
 		}
 		free(tree);
-	}
-}
-
-void tostringrt(rtree* tree){
-	if (tree->leaf){
-		tostringpa(&tree->pa);
-	} else {
-		printf("{\n");
-		tostringrt(tree->sub1);
-		printf("----------\n");
-		tostringrt(tree->sub2);
-		printf("}\n");
 	}
 }

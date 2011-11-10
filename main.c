@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
 
 	resizert(rrt);
 
-	parray* testpa = defaultpa();
+	parray* testpa = createpa();
 	point* testp1 = createp(0,0,0);
 	point* testp2 = (point*) malloc(sizeof(point));
 	setxyz(testp2, 10, 10, 10);
@@ -58,6 +58,8 @@ int main(int argc, char *argv[]) {
 	addpa(testpa, testp1);
 	addpa(testpa, testp2);
 	addpa(testpa, testp3);
+	
+	printpa(testpa);
 
 	printrect(findmbr(testpa));
 	
