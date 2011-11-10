@@ -13,9 +13,9 @@ int main(int argc, char *argv[]) {
 	rtree *rrt, *grt, *brt; /* R, G, B channels */
 	point* p;
 
-	rrt = defaultrt();
-	grt = defaultrt();
-	brt = defaultrt();
+	rrt = creatert();
+	grt = creatert();
+	brt = creatert();
 
 	for(i = 0; i < argc; i++) {
 		printf("argument at [%d]: %s\n", i, argv[i]);

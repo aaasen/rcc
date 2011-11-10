@@ -186,8 +186,8 @@ int subrt(rtree* tree){
 			tree->leaf = 0;
 			/* tree->sub1 = (rtree*)malloc(sizeof(rtree)); */
 			/* tree->sub2 = (rtree*)malloc(sizeof(rtree)); */
-			tree->sub1 = defaultrt();
-			tree->sub2 = defaultrt();
+			tree->sub1 = creatert();
+			tree->sub2 = creatert();
 			/*
 			 * Create new subtrees, starting with the lowest and highest z values possible.p
 			 * Sub1 starts with the highest point, sub2 with the lowest.
