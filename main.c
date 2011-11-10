@@ -3,6 +3,7 @@
 #include "rtree.h"
 #include "qdbmp.h"
 #include "hmap.h"
+#include "sphere.h"
 
 #define TESTFILE "testing/checker.bmp"
 
@@ -48,8 +49,7 @@ int main(int argc, char *argv[]) {
 	resizert(rrt);
 
 	parray* testpa = defaultpa();
-	point* testp1 = (point*) malloc(sizeof(point));
-	setxyz(testp1, 0, 0, 0);
+	point* testp1 = createp(0,0,0);
 	point* testp2 = (point*) malloc(sizeof(point));
 	setxyz(testp2, 10, 10, 10);
 	point* testp3 = (point*) malloc(sizeof(point));
@@ -60,6 +60,10 @@ int main(int argc, char *argv[]) {
 	addpa(testpa, testp3);
 
 	printrect(findmbr(testpa));
+	
+	sphere* newsphere = createsphr(0, 0, 0, 5);
+	printsphr(newsphere);
+	printf("point %s in sphere\n", pinsphr(newsphere, testp3) ? "is" : "is not");
 
 	return 0;
 }

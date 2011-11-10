@@ -25,6 +25,7 @@
 #include "point.h"
 #include "rect.h"
 #include "parray.h"
+#include "sphere.h"
 
 static int maxsdev = 30; /* Maximum standard deviation within each rtree */
 
