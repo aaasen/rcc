@@ -50,6 +50,7 @@ void rebuildrt(rtree * tree);
 rtree* pfindrt(rtree* tree, point * p);
 parray* searchrt(rtree* tree, void* qshape, int (pinshape)(void*, point*), int (rinshape)(void*, rect*));
 parray* rsearchrt(rtree* tree, rect* qbox);
+parray* sphrsearchrt(rtree* tree, sphere* qrysphere);
 parray* getpointsrt(rtree* tree);
 rtree* creatert();
 void printrt(rtree* tree);
@@ -344,6 +345,11 @@ parray* searchrt(rtree* tree, void* qshape, int (pinshape)(void*, point*), int (
 /* returns an array of points which are in the query rectangle */
 parray* rsearchrt(rtree* tree, rect* qryrect) {
 	return searchrt(tree, qryrect, (void*) pinr, (void*) rinr);
+}
+
+/* returns an array of points which are in the query sphere */
+parray* sphrsearchrt(rtree* tree, sphere* qrysphere) {
+	return searchrt(tree, qrysphere, (void*) pinsphr, (void*) rinsphr);
 }
 
 /* recursively builds a parray containing the points in the given node and in all of its children */

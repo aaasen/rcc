@@ -11,6 +11,7 @@ typedef struct sphere {
 } sphere;
 
 int pinsphr(sphere* sphr, point* p);
+rect* findmbrsphr(sphere* sphr);
 sphere* createsphr(double x, double y, double z, double radius);
 void printsphr(sphere* sphr);
 void freesphr(sphere* sphr);
@@ -23,11 +24,26 @@ int pinsphr(sphere* sphr, point* p) {
 }
 
 /* returns true if the given rectangle and sphere overlap */
+/* let's call it a heuristic */
+/* TODO: don't use a heuristic */
 int rinsphr(sphere* sphr, rect* r) {
 	if(sphr && r) {
-		
+		return rinr(findmbrsphr(sphr), r);
 	} return 0;
 }
+
+/* finds the smallest rectangular prism which encompasses the sphere */
+rect* findmbrsphr(sphere* sphr) {
+	rect* mbr;
+	
+	if(sphr) {
+		mbr = createrect(sphr->center->x - sphr->radius, sphr->center->y - sphr->radius, sphr->center->z - sphr->radius,
+			sphr->center->x + sphr->radius, sphr->center->y + sphr->radius, sphr->center->y + sphr->radius);
+		return mbr;
+	}
+	return NULL;
+}
+
 
 /* returns a pointer to a new sphere with the given parameters */
 sphere* createsphr(double x, double y, double z, double radius) {

@@ -20,6 +20,7 @@ int pinsphr(sphere* sphr, point* p);
 int rinsphr(sphere* sphr, rect* r);
 
 /* finds the smallest rectangular prism which encompasses the sphere */
+rect* findmbrsphr(sphere* sphr);
 
 /* returns a pointer to a new sphere with the given parameters */
 sphere* createsphr(double x, double y, double z, double radius);

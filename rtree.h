@@ -30,6 +30,7 @@
 #include "point.h"
 #include "rect.h"
 #include "parray.h"
+#include "sphere.h"
 
 typedef struct rtree{
 	parray pa; /* array of points in the rtree */
@@ -74,6 +75,9 @@ parray* searchrt(rtree* tree, void* qshape, int (pinshape)(void*, point*), int (
 
 /* returns an array of points which are in the query rectangle */
 parray* rsearchrt(rtree* tree, rect* qbox);
+
+/* returns an array of points which are in the query sphere */
+parray* sphrsearchrt(rtree* tree, sphere* qrysphere);
 
 /* recursively builds a parray containing the points in the given node and in all of its children */
 parray* getpointsrt(rtree* tree);

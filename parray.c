@@ -93,10 +93,8 @@ void printpa(parray* pa) {
 	int i;
 	int count;
 	
-	count = 0;
 	for (i = 0; i<pa->len; i++){
-		count += pa->points[i].z;
-		/* printf("Point z: %.2f\n", pa->points[i].z); */
+		printf("Point z: %.2f\n", pa->points[i].z); 
 	}
 }
 
