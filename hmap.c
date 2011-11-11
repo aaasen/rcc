@@ -6,9 +6,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <stdint.h>
 #include "rtree.h"
 #include "point.h"
 #include "qdbmp.h"
+#include "parray.h"
 
 typedef struct{
 	uint32_t mnum; /* Magic number, always 0xA9D7FABA */
@@ -41,7 +43,7 @@ typedef struct{
 
 /* Private 2D rectangle struct with color value */
 typedef struct{
-	uint16_t x1; /* 1 = top left, 2 = bottom right */
+	uint16_t x1;
 	uint16_t y1;
 	uint16_t x2;
 	uint16_t y2;
@@ -54,8 +56,9 @@ int savercc(char* file, rtree* r, rtree* g, rtree* b);
 int rcctobmp(char* rccfile, char* bmpfile);
 int rrcchead(FILE* compressed, RCC_HEADER* header);
 void rchead(FILE* compressed, RCC_CHANNEL_HEADER* header);
-int saverccchannel(char* file, rtree* r);
-
+int schead(char* file, rtree* rtree, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+int scbody(FILE* file, rtree* r);
+int savec(FILE* file, rtree* r);
 
 /* Load the bmp image into r, g, and b rtrees. Return true if successful */
 int loadbmp(char* file, rtree* r, rtree* g, rtree* b){
@@ -204,6 +207,7 @@ int rcctobmp(char* rccfile, char* bmpfile){
     crect* leaf; /* Rectangle used for reading each node within the for loop */
     pixel* data; /* Raw data to be saved to bitmap, stored x, y */
     int i, j, k; /* Iterators */
+    int 
     
     compressed = fopen(rccfile, "r");
     if (!compressed){
@@ -246,6 +250,7 @@ int rcctobmp(char* rccfile, char* bmpfile){
     BMP_WriteFile(target, bmpfile);
     
     BMP_Free(target);
+    fclose(compressed);
     return 1;
 }
 
@@ -265,17 +270,56 @@ void rchead(FILE* compressed, RCC_CHANNEL_HEADER* header) {
 }
 
 /* Save an individual channel to a file, returns 1 if successful, 0 otherwise*/
-int saverccchannel(char* file, rtree* r) {
-	RCC_CHANNEL_HEADER* chanhead = malloc(sizeof(RCC_CHANNEL_HEADER));
-	chanhead->
+int schead(FILE* file, rtree* rtree, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+	if (file) {
+		RCC_CHANNEL_HEADER* chanhead = malloc(sizeof(RCC_CHANNEL_HEADER));
+		chanhead->r = r;
+		chanhead->g = g;
+		chanhead->b = b;
+		chanhead->a = a;
+		chanhead->cbsize = 8;
+		fwrite(chanhead, malloc(sizeofRCC_CHANNEL_HEADER), 1, file);
+		return 1;
+	} return 0;
+}
+
+/* Saves the channel body, recursively traversing each node of the rtree, returns size of body */
+int scbody(FILE* file, rtree* r) {
+	uint8_t avg; /* average color, to be reused */
+	crect* rect;
 	
-	
+	if (file) {
+		if (r->leaf) {
+			rect = malloc(sizeof(crect));
+			rect->x1 = (uint16_t) r->mbr.p1.x;
+			rect->y1 = (uint16_t) r->mbr.p2.x;
+			rect->x2 = (uint16_t) r->mbr.p1.y;
+			rect->x2 = (uint16_t) r->mbr.p2.y;
+			rect->color = (uint8_t) avgzpa(&r->pa);
+			frwite(rect, sizeof(crect), 1, file);
+			free(rect);
+			return sizeof(crect);
+		} else {
+			return scbody(file, r->sub1) + savecbody(file, r->sub2);
+		}
+	}
+}
+
+/* Takes an rtree and saves it as a channel in an rcc file, return true if successful */
+int savec(FILE* file, rtree* r) {
+	schead(file, r);
+	fpos = ftell(file) - 4;
+	bsize = scbody(file, r);
+	fseek(SEEK_SET, fpos, file);
+	fwrite(&bsize, 4, 1, file);
+	fseek(SEEK_END, 0, file);
 }
 
 /* Save the rtrees to the specified rcc file, return true if successful. */
 int savercc(char* file, rtree* r, rtree* g, rtree* b) {
-	int i;
 	RCC_HEADER* head = malloc(sizeof(RCC_HEADER));
+	long fpos; /* positon in file */
+	uint32_t bsize; /* channel body size */
 	
 	head->mnum = 0xA9D7FABA;
 	head->checksum = 0; 
@@ -284,6 +328,8 @@ int savercc(char* file, rtree* r, rtree* g, rtree* b) {
 	head->xpix = abs(r->mbr.p2.x - r->mbr.p1.x);
 	head->ypix = abs(r->mbr.p2.y - r->mbr.p1.y);
 	fwrite(head, sizeof(RCC_HEADER), 1, file);
-	
-	
+	savec(file, r);
+	savec(file, g);
+	savec(file, b);
+	free(head);
 }
