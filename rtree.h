@@ -91,4 +91,7 @@ void printrt(rtree* tree);
 /* Recursively free the rtree and all of its nodes */
 void freert(rtree* tree);
 
+/* Change the maximum standard deviation */
+void setmaxsdev(int newval);
+
 #endif

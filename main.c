@@ -9,22 +9,71 @@
 #define TESTFILE "testing/checker.bmp"
 #define OUTFILE "out.bmp"
 
+enum FLAGS {
+	NONE,
+	MAXSDEV,
+	OUTFILENAME
+} flags;
+
 int main(int argc, char *argv[]) {
 	int i;
 	int pcount; /* Number of pixels/points in bitmap */
 	rtree *rrt, *grt, *brt; /* R, G, B channels */
 	point* p;
+	char* arg, *filename, *outfilename;
+	int nextmaxsdev, nextoutfile;
+	enum FLAGS curflag; /* Current flag */
 
 	rrt = creatert();
 	grt = creatert();
 	brt = creatert();
 
+	filename = NULL;
+	outfilename = OUTFILE;
+	curflag = 
+	curflag = NONE;
+	
+	for (i = 1; i < argc; i++){
+		arg = argv[i];
+		if (arg[0] == '-'){
+		  switch (arg[1]){
+		  case 'm':
+		  	curflag = MAXSDEV;
+			printf("Setting standard deviation\n");
+			break;
+		  case 'o':
+		  	curflag = OUTFILENAME;
+			break;
+		  }
+		  continue;
+		} else {
+			switch(curflag){
+			case MAXSDEV:
+				setmaxsdev(atoi(argv[i]));
+				printf("Set maximum standard deviation to %d\n", atoi(argv[i]));
+				nextmaxsdev = 0;
+				break;
+			case OUTFILENAME:
+				outfilename = arg;
+				printf("Output file set to %s\n", outfilename);
+				nextoutfile = 0;
+				break;
+			default:
+				filename = arg;
+				break;
+			}
+			curflag = NONE;
+		}
+	}
+
+	
+	
 	for(i = 0; i < argc; i++) {
 		printf("argument at [%d]: %s\n", i, argv[i]);
 	}
-	if (argc > 1){
-		printf("Loading BMP %s\n", argv[1]);
-		if (!loadbmp(argv[1], rrt, grt, brt)){
+	if (filename){
+		printf("Loading BMP %s\n", filename);
+		if (!loadbmp(filename, rrt, grt, brt)){
 			printf("Failed to load BMP. Exiting.\n");
 			exit(0);
 		}
@@ -43,7 +92,7 @@ int main(int argc, char *argv[]) {
 
 	//if(rrt->leaf) printf("rtt is a leaf\n");
 	//tostringrt(brt);
-	savebmp(OUTFILE, rrt, grt, brt);
+	savebmp(outfilename, rrt, grt, brt);
 	parray* rrtpa = getpointsrt(rrt);
 /*	printf("----points in rrt----\n");*/
 /*	tostringpa(rrtpa);*/

@@ -55,6 +55,7 @@ parray* getpointsrt(rtree* tree);
 rtree* creatert();
 void printrt(rtree* tree);
 void freert(rtree* tree);
+void setmaxsdev(int newval);
 
 /* Add the specified point to the specified rtree
  * Can not resize the rtree, only expand it. e.g. a large prism has been predefined
@@ -410,4 +411,8 @@ void tostringrt(rtree* tree){
 		printf("}\n");
   
 	}
+}
+
+void setmaxsdev(int newval){
+	maxsdev = newval;
 }
