@@ -321,14 +321,19 @@ int savec(FILE* file, rtree* rt, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	long fpos; /* Position in file */
 	uint32_t bsize;
 	
- 	schead(file, rt, r, g, b, a);
- 	fpos = ftell(file) - 4;
- 	bsize = scbody(file, rt);
-    /* Return to the location 4 bytes before the end of the channel header, add save the size of the body, */
-    /* and return to the end so that the main saving function cn progress  */
- 	fseek(file, fpos, SEEK_SET);
- 	fwrite(&bsize, 4, 1, file);
- 	fseek(file, 0, SEEK_END);
+	if (file) {
+	 	schead(file, rt, r, g, b, a);
+	 	fpos = ftell(file) - 4;
+	 	bsize = scbody(file, rt);
+		/* Return to the location 4 bytes before the end of the channel header, add save the size of the body, */
+		/* and return to the end so that the main saving function cn progress  */
+	 	fseek(file, fpos, SEEK_SET);
+	 	fwrite(&bsize, 4, 1, file);
+	 	fseek(file, 0, SEEK_END);
+	 	return 1;
+	} else {
+		return 0;
+	}
 }
 
 /* Save the rtrees to the specified rcc file, return true if successful.  */
@@ -350,4 +355,5 @@ int savercc(char* file, rtree* r, rtree* g, rtree* b) {
  	savec(target, g, (uint8_t) 0, (uint8_t) 256, (uint8_t) 0, (uint8_t) 0);
  	savec(target, b, (uint8_t) 0, (uint8_t) 0, (uint8_t) 256, (uint8_t) 0);
  	free(head);
+ 	return 1;
 }
