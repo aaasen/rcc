@@ -230,18 +230,18 @@ int savebmp(char* file, rtree* r, rtree* g, rtree* b){
 /*     	return 0; */
 /*     } */
     
-/*     lsize = sizeof(crect); /\* This will have to be derived from the header *\/ */
+/*     lsize = sizeof(crect); /\* This will have to be derived from the header eventually *\/ */
 
 /*     /\* Converts the data from the rcc into pixels *\/ */
 /*     data = malloc(lsize*head->xpix*head->ypix); */
-/*     while (!feof(compressed)){ */
+/*     while (!feof(compressed)){ /\* Keeps going until the file ends, so we can have any number of channels *\/ */
 /*     	chead = malloc(sizeof(RCC_CHANNEL_HEADER)); */
 /*     	rchead(compressed, chead); */
 /*     	for (i = 0; i < chead->cbsize; i += lsize){ */
 /*     		fread(leaf, lsize, 1, compressed); */
 /*     		for (j = leaf->x1; j <= leaf->x2; j++){ */
 /*     			for (k = leaf->y1; k <= leaf->y2; j++){ */
-/*     				data[i*head->xpix + j].r+=chead->r & leaf->color; */
+/*     				data[i*head->xpix + j].r+=chead->r & leaf->color; /\* The bitmasks are bitwise ANDed with the color value to put the color in the proper bitmap channel  *\/ */
 /*     				data[i*head->xpix + j].g+=chead->g & leaf->color; */
 /*     				data[i*head->xpix + j].b+=chead->b & leaf->color; */
 /*     			} */
@@ -290,7 +290,7 @@ int savebmp(char* file, rtree* r, rtree* g, rtree* b){
 /* 		chanhead->b = b; */
 /* 		chanhead->a = a; */
 /* 		chanhead->cbsize = 8; */
-/* 		fwrite(chanhead, malloc(sizeofRCC_CHANNEL_HEADER), 1, file); */
+/* 		fwrite(chanhead, malloc(sizeof(RCC_CHANNEL_HEADER), 1, file); */
 /* 		return 1; */
 /* 	} return 0; */
 /* } */
@@ -302,6 +302,7 @@ int savebmp(char* file, rtree* r, rtree* g, rtree* b){
 	
 /* 	if (file) { */
 /* 		if (r->leaf) { */
+/*       /\* Construct the crect for saving from the leaf *\/ */
 /* 			rect = malloc(sizeof(crect)); */
 /* 			rect->x1 = (uint16_t) r->mbr.p1.x; */
 /* 			rect->y1 = (uint16_t) r->mbr.p2.x; */
@@ -310,7 +311,7 @@ int savebmp(char* file, rtree* r, rtree* g, rtree* b){
 /* 			rect->color = (uint8_t) avgzpa(&r->pa); */
 /* 			frwite(rect, sizeof(crect), 1, file); */
 /* 			free(rect); */
-/* 			return sizeof(crect); */
+/* 			return sizeof(crect); /\* This leads to a size of the full header when calling the function on the full rtree *\/ */
 /* 		} else { */
 /* 			return scbody(file, r->sub1) + savecbody(file, r->sub2); */
 /* 		} */
@@ -322,6 +323,7 @@ int savebmp(char* file, rtree* r, rtree* g, rtree* b){
 /* 	schead(file, r); */
 /* 	fpos = ftell(file) - 4; */
 /* 	bsize = scbody(file, r); */
+/*   /\* Return to the location 4 bytes before the end of the channel header, add save the size of the body, and return to the end so that the main saving function cn progress *\/ */
 /* 	fseek(SEEK_SET, fpos, file); */
 /* 	fwrite(&bsize, 4, 1, file); */
 /* 	fseek(SEEK_END, 0, file); */
@@ -333,6 +335,7 @@ int savebmp(char* file, rtree* r, rtree* g, rtree* b){
 /* 	long fpos; /\* positon in file *\/ */
 /* 	uint32_t bsize; /\* channel body size *\/ */
 	
+/*   /\* Save the file header, the checksum is currently just set to 0 *\/ */
 /* 	head->mnum = 0xA9D7FABA; */
 /* 	head->checksum = 0;  */
 /* 	head->flags = 0; */
@@ -340,6 +343,7 @@ int savebmp(char* file, rtree* r, rtree* g, rtree* b){
 /* 	head->xpix = abs(r->mbr.p2.x - r->mbr.p1.x); */
 /* 	head->ypix = abs(r->mbr.p2.y - r->mbr.p1.y); */
 /* 	fwrite(head, sizeof(RCC_HEADER), 1, file); */
+
 /* 	savec(file, r); */
 /* 	savec(file, g); */
 /* 	savec(file, b); */
