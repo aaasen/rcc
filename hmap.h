@@ -65,13 +65,13 @@ int rrcchead(FILE* compressed, RCC_HEADER* header);
 void rchead(FILE* compressed, RCC_CHANNEL_HEADER* header);
 
 /* Save an individual channel to a file, returns 1 if successful, 0 otherwise*/
-int schead(char* file, rtree* rtree, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+int schead(FILE* file, rtree* rtree, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
 /* Saves the channel body, recursively traversing each node of the rtree, returns size of body */
 int scbody(FILE* file, rtree* r);
 
 /* Takes an rtree and saves it as a channel in an rcc file, return true if successful */
-int savec(FILE* file, rtree* r);
+int savec(FILE* file, rtree* rt, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
 
 #endif
