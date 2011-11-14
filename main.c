@@ -16,6 +16,8 @@ enum FLAGS {
 } flags;
 
 int main(int argc, char *argv[]) {
+
+
 	int i;
 	int pcount; /* Number of pixels/points in bitmap */
 	rtree *rrt, *grt, *brt; /* R, G, B channels */
@@ -27,6 +29,10 @@ int main(int argc, char *argv[]) {
 	rrt = creatert();
 	grt = creatert();
 	brt = creatert();
+	
+	loadbmp("testing/colors.bmp", rrt, grt, brt);
+	savercc("out.rcc", rrt, grt, brt);
+	/* rcctobmp("out.rcc", "out.bmp"); */
 
 	filename = NULL;
 	outfilename = OUTFILE;
