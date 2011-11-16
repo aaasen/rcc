@@ -5,8 +5,12 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 #include "point.h"
 #include "rect.h"
+
+#define min(a, b) (((a) < (b)) ? (a) : (b))
+#define max(a, b) (((a) > (b)) ? (a) : (b))
 
 typedef struct sphere {
 	point* center;
@@ -18,6 +22,9 @@ int pinsphr(sphere* sphr, point* p);
 
 /* returns true if the given rectangle and sphere overlap */
 int rinsphr(sphere* sphr, rect* r);
+
+/* returns true if the line defined by the given endpoins overlaps the sphere */
+int linsphr(sphere* sphr, point* p1, point* p2);
 
 /* finds the smallest rectangular prism which encompasses the sphere */
 rect* findmbrsphr(sphere* sphr);

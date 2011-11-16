@@ -104,24 +104,7 @@ int main(int argc, char *argv[]) {
 /*	tostringpa(rrtpa);*/
 /*	printf("----end point in rrt----\n");*/
 
-	resizert(rrt);
-
-	parray* testpa = createpa();
-	point* testp1 = createp(0,0,0);
-	point* testp2 = (point*) malloc(sizeof(point));
-	setxyz(testp2, 10, 10, 10);
-	point* testp3 = (point*) malloc(sizeof(point));
-	setxyz(testp3, 5, 5, 5);
-	
-	addpa(testpa, testp1);
-	addpa(testpa, testp2);
-	addpa(testpa, testp3);
-	
-	printpa(testpa);
-
-	printrect(findmbr(testpa));
-	
 	sphere* newsphere = createsphr(0, 0, 0, 5);
 	printsphr(newsphere);
-	printf("point %s in sphere\n", pinsphr(newsphere, testp3) ? "is" : "is not");
+	printf("rect %s in sphere\n", rinsphr(newsphere, createrect(5, 5, 5, 5, 5, 5)) ? "is" : "is not");
 }

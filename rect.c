@@ -21,6 +21,7 @@ double getdr(rect* box);
 double rszaxis(double center, double width, double point);
 double rszsum(rect* box, point* p);
 int pinr(rect* box, point* p);
+int linr(rect* box, point* p1, point* p2);
 int rinr(rect* box1, rect* box2);
 rect* findmbr(parray* pa);
 rect* createrect(double x1, double y1, double z1, double x2, double y2, double z2);
@@ -64,6 +65,17 @@ int pinr(rect* box, point* p) {
 	return ((pinrng(box->p1.x, box->p2.x, p->x, 1)) &&
 		(pinrng(box->p1.y, box->p2.y, p->y, 1)) &&
 		(pinrng(box->p1.z, box->p2.z, p->z, 1)));
+}
+
+/* returns true if the line defined by the two poins intersects the rectangle */
+int linr(rect* box, point* p1, point* p2){
+	return (pinr(box, p1) || pinr(box, p2)) ||
+	(p1-> x >= box->p1.x && p2->x <= box->p1.x) ||
+	(p2-> x >= box->p1.x && p1->x <= box->p1.x) ||
+	(p1-> y >= box->p1.y && p2->y <= box->p1.y) ||
+	(p2-> y >= box->p1.y && p1->y <= box->p1.y) ||
+	(p1-> z >= box->p1.z && p2->z <= box->p1.z) ||
+	(p2-> z >= box->p1.z && p1->z <= box->p1.z);
 }
 
 /* evaluates whether or not two rectangles overlap and returns true if they do and false if not */
