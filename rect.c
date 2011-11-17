@@ -15,6 +15,11 @@ typedef struct rect {
 	point p2; /* Opposite corner of prism */
 } rect;
 
+typedef struct interval {
+	double p1; /* First point in interval */
+	double p2; /* Second point in interval */
+} interval;
+
 double getwr(rect* box);
 double gethr(rect* box);
 double getdr(rect* box);
@@ -25,6 +30,7 @@ int linr(rect* box, point* p1, point* p2);
 int rinr(rect* box1, rect* box2);
 rect* findmbr(parray* pa);
 rect* createrect(double x1, double y1, double z1, double x2, double y2, double z2);
+interval* createinterval(double p1, double p2);
 void printrect(rect* box);
 void freerect(rect* box);
 
@@ -122,6 +128,15 @@ rect* createrect(double x1, double y1, double z1, double x2, double y2, double z
 	return newrect;
 }
 
+/* Create new interval with the specified values */
+interval* createinterval(double p1, double p2){
+	interval* ivl = (interval*)malloc(sizeof(interval));
+	ivl->p1 = p1;
+	ivl->p2 = p2;
+	return ivl;
+}
+
+
 /* prints both coordinates of the rectangle */
 void printrect(rect* box){
 	printf("rect(p1%sp2%s)\n", tostringp(&box->p1), tostringp(&box->p2));
@@ -132,5 +147,51 @@ void freerect(rect* box) {
 	free(&box->p1);
 	free(&box->p2);
 	free(box);
+}
+
+/* finds the inner interval of the two intervals */
+interval* innerinterval(interval* inv1, interval* inv2){
+	double points[] = {inv1->p1, inv1->p2, inv2->p1, inv2->p2};
+	int i, j;
+	interval* ivl = (interval*)malloc(sizeof(interval));
+	int lesscount, samecount;
+	
+	for (i = 0; i < 4; i ++){
+		lesscount = 0;
+		samecount = -1;
+		for (j = 0; j < 4; j ++){
+			if(points[j] == points[i]){
+				samecount++;
+			} else if (points[j] < points[i]){
+				lesscount++;
+			}
+		}
+		if (lesscount <= 1 && samecount + lesscount >= 1){
+			ivl->p1 = points[i];
+		}
+		if (lesscount <= 2 && samecount + lesscount >= 2){
+			ivl->p2 = points[i];
+		}
+	}
+	return ivl;
+}
+
+/* finds the inner rectangle of the two rectangles */
+rect* innerrect(rect* r1, rect* r2){
+	interval* r1x, *r1y, *r1z, *r2x, *r2y, *r2z;
+	interval* x, *y, *z;
+
+	r1x = createinterval(r1->p1.x, r1->p2.x);
+	r1y = createinterval(r1->p1.y, r1->p2.y);
+	r1z = createinterval(r1->p1.z, r1->p2.z);
+	r2x = createinterval(r2->p1.x, r2->p2.x);
+	r2y = createinterval(r2->p1.y, r2->p2.y);
+	r2z = createinterval(r2->p1.z, r2->p2.z);
+	
+	x = innerinterval(r1x, r2x);
+	y = innerinterval(r1y, r2y);
+	z = innerinterval(r1z, r2z);
+
+	return createrect(x->p1, y->p1, z->p1, x->p2, y->p2, z->p2);
 }
 

@@ -114,8 +114,8 @@ int main(int argc, char *argv[]) {
 	rect* r2;
 
 	r1 = createrect(1, 1, 0, 5, 5, 0);
-	r2 = createrect(0, 0, 0, .9, .9, 0);
-	if (rinr(r1, r2)){
-		printf("Rectangles intersect");
-	}
+	r2 = createrect(0, 2, 0, 8, 3, 0);
+
+	printrect(innerrect(r1, r2));
+
 }

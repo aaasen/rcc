@@ -18,6 +18,11 @@ typedef struct rect {
 	point p2; /* Opposite corner of prism */
 } rect;
 
+typedef struct interval {
+	double p1; /* First point in interval */
+	double p2; /* Second point in interval */
+} interval;
+
 /* get the width, height and depth of the rectangle, respectively */
 double getwr(rect* box);
 double gethr(rect* box);
@@ -44,10 +49,19 @@ rect* findmbr(parray* pa);
 /* returns a pointer to a rectangle which is creating with the given arguments */
 rect* createrect(double x1, double y1, double z1, double x2, double y2, double z2);
 
+/* Create new interval with the specified values */
+interval* createinterval(double p1, double p2);
+
 /* prints both coordinates of the rectangle */
 void printrect(rect* box);
 
 /* frees the rectangle and all substructs */
 void freerect(rect* box);
+
+/* finds the inner interval of the two intervals */
+interval* innerinterval(interval* inv1, interval* inv2);
+
+/* finds the inner rectangle of the two rectangles */
+rect* innerrect(rect* r1, rect* r2);
 
 #endif
