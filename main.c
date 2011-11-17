@@ -108,5 +108,14 @@ int main(int argc, char *argv[]) {
 
 	sphere* newsphere = createsphr(0, 0, 0, 5);
 	printsphr(newsphere);
-	printf("rect %s in sphere\n", rinsphr(newsphere, createrect(5, 5, 5, 5, 5, 5)) ? "is" : "is not");
+	printf("rect %s in sphere\n", rinsphr(newsphere, createrect(4, 4, 4, 7, 7, 7)) ? "is" : "is not");
+
+	rect* r1;
+	rect* r2;
+
+	r1 = createrect(1, 1, 0, 5, 5, 0);
+	r2 = createrect(0, 0, 0, .9, .9, 0);
+	if (rinr(r1, r2)){
+		printf("Rectangles intersect");
+	}
 }

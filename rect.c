@@ -80,7 +80,14 @@ int linr(rect* box, point* p1, point* p2){
 
 /* evaluates whether or not two rectangles overlap and returns true if they do and false if not */
 int rinr(rect* box1, rect* box2) {
-	return pinr(box1, &box2->p1) || pinr(box1, &box2->p2) || pinr(box2, &box1->p1) || pinr(box2, &box1->p2);
+	/* Check for intersection !!!! */
+	if (box1->p1.x <= box2->p2.x && box1->p2.x >= box2->p1.x &&
+	    box1->p1.y <= box2->p2.y && box1->p2.y >= box2->p1.y &&
+	    box1->p1.z <= box2->p2.z && box1->p2.z >= box2->p1.z){
+		return 1;
+	} else {
+		return 0;
+	}
 }
 
 /* calculates the minimum bounding rectangle (mbr) of the set of points */
