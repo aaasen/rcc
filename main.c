@@ -9,6 +9,7 @@
 #define TESTFILE "testing/checker.bmp"
 #define OUTFILE "out.bmp"
 
+/* Add an element for each flag here */
 enum FLAGS {
 	NONE,
 	MAXSDEV,
@@ -16,15 +17,15 @@ enum FLAGS {
 } flags;
 
 int main(int argc, char *argv[]) {
-
-
 	int i;
 	int pcount; /* Number of pixels/points in bitmap */
 	rtree *rrt, *grt, *brt; /* R, G, B channels */
 	point* p;
-	char* arg, *filename, *outfilename;
-	int nextmaxsdev, nextoutfile;
+	char* arg, *filename, *outfilename; /* Strings for use in flags.
+					       These should only be set if the corresponding
+					       flags have been called */
 	enum FLAGS curflag; /* Current flag */
+
 
 	rrt = creatert();
 	grt = creatert();
@@ -36,11 +37,13 @@ int main(int argc, char *argv[]) {
 
 	filename = NULL;
 	outfilename = OUTFILE;
-	curflag = 
 	curflag = NONE;
 	
+	/* FLAG CODE */
 	for (i = 1; i < argc; i++){
 		arg = argv[i];
+		/* How to respond to each -* command */
+		/* Usually just setting the enum curflag to the appropriate value */
 		if (arg[0] == '-'){
 		  switch (arg[1]){
 		  case 'm':
@@ -53,22 +56,20 @@ int main(int argc, char *argv[]) {
 		  }
 		  continue;
 		} else {
-			switch(curflag){
+			switch(curflag){ /* How to behave if a flag has been set */
 			case MAXSDEV:
-				setmaxsdev(atoi(argv[i]));
+				setmaxsdev(atoi(arg));
 				printf("Set maximum standard deviation to %d\n", atoi(argv[i]));
-				nextmaxsdev = 0;
-				break;
+							break;
 			case OUTFILENAME:
 				outfilename = arg;
 				printf("Output file set to %s\n", outfilename);
-				nextoutfile = 0;
-				break;
+							break;
 			default:
 				filename = arg;
 				break;
 			}
-			curflag = NONE;
+			curflag = NONE; /* The flag has taken input, and is disabled */
 		}
 	}
 
@@ -99,6 +100,7 @@ int main(int argc, char *argv[]) {
 	//if(rrt->leaf) printf("rtt is a leaf\n");
 	//tostringrt(brt);
 	savebmp(outfilename, rrt, grt, brt);
+	savercc("out.rcc", rrt, grt, brt);
 	parray* rrtpa = getpointsrt(rrt);
 /*	printf("----points in rrt----\n");*/
 /*	tostringpa(rrtpa);*/

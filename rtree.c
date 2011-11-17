@@ -9,13 +9,12 @@
  * |  |____________|      |                         *
  * |______________________| * * * * * * * * * * * * *
  *
- *	 	 	 	 	RTREE COMPRESSION CODEC
+ *	 	      RTREE COMPRESSION CODEC
  *
  *	 	BY
- *-------Lane "Laaame" Aasen
- *	 	  ------Eamon "G-Dawg" Gaffney
- *	 	 	 	  ------Michael "Nerdberger" Rosenberger
- *	 	 	 	 	 	  ------Dylan "D-Swag" Swiggett
+ *-----Lane "Laaame" Aasen
+ *	 	----Eamon "G-Dawg" Gaffney
+ *	 	        	----Dylan "D-Swag" Swiggett
  */
 
 #include <stdlib.h>

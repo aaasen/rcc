@@ -15,10 +15,10 @@
 typedef struct{
 	uint32_t mnum; /* Magic number, always 0xA9D7FABA */
 	uint32_t checksum;
-    uint64_t flags;
-    uint16_t channelspec;
-    uint16_t xpix; /* Length of image x axis */
-    uint16_t ypix; /* Length of image y axis */
+	uint64_t flags;
+	uint16_t channelspec;
+	uint16_t xpix; /* Length of image x axis */
+	uint16_t ypix; /* Length of image y axis */
 } RCC_HEADER;
 
 typedef struct{
@@ -195,7 +195,7 @@ int savebmp(char* file, rtree* r, rtree* g, rtree* b){
 	}
 
 	BMP_WriteFile(img, file);
-	BMP_WriteFile(rimg, "outr,bmp");
+	BMP_WriteFile(rimg, "outr.bmp");
 	BMP_WriteFile(gimg, "outg.bmp");
 	BMP_WriteFile(bimg, "outb.bmp");
 	BMP_CHECK_ERROR(stdout, -1);
