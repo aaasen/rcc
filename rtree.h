@@ -31,6 +31,7 @@
 #include "rect.h"
 #include "parray.h"
 #include "sphere.h"
+#include "rectarray.h"
 
 typedef struct rtree{
 	parray pa; /* array of points in the rtree */
@@ -61,6 +62,9 @@ int resizert(rtree * tree);/* Recursively resize the tree, return false if rebui
 void rebuildrt(rtree * tree);/* Recursively rebuild the entire tree, optimizing search time */
 
 rtree* pfindrt(rtree * tree, point * p);/* Recursively search through the rtree to find the rtree containing the specified point. Return null if the point is not in the tree. Assumes the rtree is properly resized */
+
+/* Fill the rectarray with all rectangles which intersect the query. Works recursively */
+void rfindrt(rtree* tree, rect* qshape, rectarray* ra);
 
 /* searchrt() is an extensible search function for rtrees */
 /* it returns an array of points which are contained in qshape (which can be any, preferably geometric, struct) */

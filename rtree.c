@@ -25,6 +25,7 @@
 #include "rect.h"
 #include "parray.h"
 #include "sphere.h"
+#include "rectarray.h"
 
 static int maxsdev = 5; /* Maximum standard deviation within each rtree */
 
@@ -47,7 +48,8 @@ int subrt(rtree * tree);
 int resizert(rtree * tree);
 void rebuildrt(rtree * tree);
 rtree* pfindrt(rtree* tree, point * p);
-parray* searchrt(rtree* tree, void* qshape, int (pinshape)(void*, point*), int (rinshape)(void*, rect*));
+void rfindrt(rtree* tree, rect* qshape, rectarray* ra);
+parray* searchrt(rtree* tree, void* qshape, int (pinshape)(void*, point*), int (rinshape)(void*, rect*n));
 parray* rsearchrt(rtree* tree, rect* qbox);
 parray* sphrsearchrt(rtree* tree, sphere* qrysphere);
 parray* getpointsrt(rtree* tree);
@@ -295,9 +297,21 @@ rtree* pfindrt(rtree* tree, point * p){
 			}
 		}
 	} else {
-		perror("[Error]: pfindrt sent a null pointer");
+		perror("p[Error]: pfindrt sent a null pointer");
 	}
 	return NULL;/* Returned if error occurs, or if point is not found */
+}
+
+/* Fill the rectarray with all rectangles which intersect the query. Works recursively */
+void rfindrt(rtree* tree, rect* qshape, rectarray* ra){
+	if(rinr(&tree->mbr, qshape)){
+		if (tree->leaf){
+			addra(ra, &tree->mbr);
+		} else {
+			rfindrt(tree->sub1, qshape, ra);
+			rfindrt(tree->sub2, qshape, ra);
+		}
+	}
 }
 
 /* searchrt() is an extensible search function for rtrees */

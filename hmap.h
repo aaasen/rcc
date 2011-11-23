@@ -13,8 +13,8 @@
 #include "point.h"
 #include "qdbmp.h"
 
-#ifndef HMAP_H_
-#define HMAP_H_
+#ifndef HMAP_H
+#define HMAP_H
 
 typedef struct{
 	uint32_t mnum; /* Magic number, always 0xA9D7FABA */

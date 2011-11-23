@@ -141,7 +141,6 @@ void rtavgpoints(rtree* rt, parray* pa){
 /* Save the rtrees to the specified bitmap file, return true if successful. */
 int savebmp(char* file, rtree* r, rtree* g, rtree* b){
 	BMP* img, *rimg, *gimg, *bimg;
-	FILE* nepwfile;
 	pixel* pixels;
 	pixel* pixeltemp;/* Temporary pixel for drawing to the BMP */
 	point* p;

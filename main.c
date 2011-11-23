@@ -5,6 +5,7 @@
 #include "hmap.h"
 #include "sphere.h"
 #include "cylinder.h"
+#include "rectarray.h"
 
 #define TESTFILE "testing/checker.bmp"
 #define OUTFILE "out.bmp"
@@ -106,9 +107,9 @@ int main(int argc, char *argv[]) {
 /*	tostringpa(rrtpa);*/
 /*	printf("----end point in rrt----\n");*/
 
-	sphere* newsphere = createsphr(0, 0, 0, 5);
-	printsphr(newsphere);
-	printf("rect %s in sphere\n", rinsphr(newsphere, createrect(4, 4, 4, 7, 7, 7)) ? "is" : "is not");
+	/* sphere* newsphere = createsphr(0, 0, 0, 5); */
+	/* printsphr(newsphere); */
+	/* printf("rect %s in sphere\n", rinsphr(newsphere, createrect(4, 4, 4, 7, 7, 7)) ? "is" : "is not"); */
 
 	rect* r1;
 	rect* r2;
