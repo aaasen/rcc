@@ -31,6 +31,7 @@ all:
 	make objects
 	make exe
 	make clean
+	@echo Yay! Compiled
 
 run:
 	make all
