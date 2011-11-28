@@ -40,3 +40,7 @@ run:
 leak:
 	make all
 	valgrind --leak-check=full ./$(OUTPUT)
+	
+leaklog:
+	make all
+	valgrind --leak-check=full -q --log-file=leaklog.txt ./$(OUTPUT)	
