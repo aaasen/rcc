@@ -14,8 +14,8 @@
 #define RECT_H
 
 typedef struct rect {
-	point p1; /* Corner of prism */
-	point p2; /* Opposite corner of prism */
+	point min; /* Corner of prism */
+	point max; /* Opposite corner of prism */
 } rect;
 
 typedef struct interval {

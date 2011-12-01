@@ -12,7 +12,7 @@
 #include "qdbmp.h"
 #include "parray.h"
 
-typedef struct{
+typedef struct RCC_HEADER {
 	uint32_t mnum; /* Magic number, always 0xA9D7FABA */
 	uint32_t checksum;
 	uint64_t flags;
@@ -21,7 +21,7 @@ typedef struct{
 	uint16_t ypix; /* Length of image y axis */
 } RCC_HEADER;
 
-typedef struct{
+typedef struct RCC_CHANNEL_HEADER {
 	/*
 	 * TODO The color variable sizes will need to be changed to handle images
 	 * with more color depth at some point, so this struct is temporary
@@ -35,14 +35,14 @@ typedef struct{
 } RCC_CHANNEL_HEADER;
 
 /* We need this because we can't save to the bitmap one color value at a time */
-typedef struct{
+typedef struct pixel {
 	uint8_t r;
 	uint8_t g;
 	uint8_t b;
 } pixel;
 
 /* Private 2D rectangle struct with color value */
-typedef struct{
+typedef struct crect {
 	uint16_t x1;
 	uint16_t y1;
 	uint16_t x2;
@@ -122,11 +122,11 @@ void rtavgpoints(rtree* rt, parray* pa){
 	if (rt->leaf){
 		avgz = avgzpa(&rt->pa);
 
-		/* printf("mbr: %s, %s\n", tostringp(&rt->mbr.p1), tostringp(&rt->mbr.p2)); */
+		/* printf("mbr: %s, %s\n", tostringp(&rt->mbr.min), tostringp(&rt->mbr.max)); */
 		for (x = 0; x <= getwr(&rt->mbr); x++){
 			for (y = 0; y <= gethr(&rt->mbr); y++){
 			  p = (point*)malloc(sizeof(point));
-			  setxyz(p, x + rt->mbr.p1.x, y + rt->mbr.p1.y, avgz);
+			  setxyz(p, x + rt->mbr.min.x, y + rt->mbr.min.y, avgz);
 			  addpa(pa, p);
 			  /* printf("POINT ADDED, z = %.2f\n", p->z); */
 			}
@@ -211,7 +211,7 @@ int rcctobmp(char* rccfile, char* bmpfile){
     FILE* compressed ;
     BMP* target;
     RCC_HEADER* head;
-    uint16_t lsize; /* Size of the file's representation of an rtree leaf */
+    int lsize; /* Size of the file's representation of an rtree leaf */
     RCC_CHANNEL_HEADER* chead; /* Channel header, reused for each channel */
     crect* leaf; /* Rectangle used for reading each node within the for loop  */
     pixel* data; /* Raw data to be saved to bitmap, stored x, y */
@@ -222,14 +222,16 @@ int rcctobmp(char* rccfile, char* bmpfile){
     if (!compressed){
         return 0; /* Unable to open rcc file  */
     }
-    head = malloc(sizeof(RCC_HEADER));
+    head = (RCC_HEADER*) malloc(sizeof(RCC_HEADER));
     if (!rrcchead(compressed, head)){
     	return 0;
     }
-    lsize = sizeof(crect); /* This will have to be derived from the header eventually */
+    
+   lsize = (int) sizeof(crect); /* This will have to be derived from the header eventually */
 
     /* Converts the data from the rcc into pixels */
-    data = malloc(lsize*head->xpix*head->ypix);
+    data = (pixel*) malloc(sizeof(pixel)*head->xpix*head->ypix);
+    printf("allocmem: %d\n", head->xpix*head->ypix);
     while (!feof(compressed)){ /* Keeps going until the file ends, so we can have any number of channels */
     	chead = malloc(sizeof(RCC_CHANNEL_HEADER));
     	rchead(compressed, chead);
@@ -237,10 +239,11 @@ int rcctobmp(char* rccfile, char* bmpfile){
      		fread(leaf, lsize, 1, compressed);
      		for (j = leaf->x1; j <= leaf->x2; j++){
      			for (k = leaf->y1; k <= leaf->y2; j++){
+/*     				printf("allocmemqwiyw[%d, %d]: %d\n", j, k, j*head->xpix + k);*/
 					/* The bitmasks are bitwise ANDed with the color value to put the color in the proper bitmap channel */
-    				data[i*head->xpix + j].r+=chead->r & leaf->color;
-    				data[i*head->xpix + j].g+=chead->g & leaf->color;
-    				data[i*head->xpix + j].b+=chead->b & leaf->color;
+    				data[j*head->xpix + k].r+=chead->r & leaf->color;
+    				data[j*head->xpix + k].g+=chead->g & leaf->color;
+    				data[j*head->xpix + k].b+=chead->b & leaf->color;
     			}
      		}
     	}
@@ -301,10 +304,10 @@ int scbody(FILE* file, rtree* r) {
  		if (r->leaf) {
        /* Construct the crect for saving from the leaf  */
  			rect = malloc(sizeof(crect));
- 			rect->x1 = (uint16_t) r->mbr.p1.x;
- 			rect->y1 = (uint16_t) r->mbr.p2.x;
- 			rect->x2 = (uint16_t) r->mbr.p1.y;
- 			rect->x2 = (uint16_t) r->mbr.p2.y;
+ 			rect->x1 = (uint16_t) r->mbr.min.x;
+ 			rect->y1 = (uint16_t) r->mbr.max.x;
+ 			rect->x2 = (uint16_t) r->mbr.min.y;
+ 			rect->x2 = (uint16_t) r->mbr.max.y;
  			rect->color = (uint8_t) avgzpa(&r->pa);
  			fwrite(rect, sizeof(crect), 1, file);
  			free(rect);
@@ -346,8 +349,8 @@ int savercc(char* file, rtree* r, rtree* g, rtree* b) {
  	head->checksum = 0;
  	head->flags = 0;
  	head->channelspec = 57344; /* First three bits of a 16 bit int */
- 	head->xpix = abs(r->mbr.p2.x - r->mbr.p1.x);
- 	head->ypix = abs(r->mbr.p2.y - r->mbr.p1.y);
+ 	head->xpix = abs(r->mbr.max.x - r->mbr.min.x);
+ 	head->ypix = abs(r->mbr.max.y - r->mbr.min.y);
  	fwrite(head, sizeof(RCC_HEADER), 1, target);
 
  	savec(target, r, (uint8_t) 256, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0);

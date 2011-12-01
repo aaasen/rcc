@@ -32,7 +32,7 @@ int pincyl(cylinder* cyl, point* p){
 int rincyl(cylinder* cyl, rect* r){
 	if (cyl){
 		return rinr(r, getcylmbr(cyl)) /* the minimum bounding rectangle must overlap with the search rectangle */
-			   && lintc(&r->p1, &r->p2, cyl->centbase, cyl->radius);/* check if any lines intersect the circle */
+			   && lintc(&r->min, &r->max, cyl->centbase, cyl->radius);/* check if any lines intersect the circle */
 	} return 0;
 }
 
@@ -58,8 +58,8 @@ cylinder* createcyl(double x, double y, double z, double height, double radius){
 /* returns the minimum bounding rectangle of a cylinder */
 rect* getcylmbr(cylinder* cyl){
 	rect* r = malloc(sizeof(rect));
-	r->p1 = *createp(cyl->centbase->x - cyl->radius, cyl->centbase->y - cyl->radius, cyl->centbase->z);
-	r->p2 = *createp(cyl->centbase->x + cyl->radius, cyl->centbase->y + cyl->radius, cyl->centbase->z + cyl->height);
+	r->min = *createp(cyl->centbase->x - cyl->radius, cyl->centbase->y - cyl->radius, cyl->centbase->z);
+	r->max = *createp(cyl->centbase->x + cyl->radius, cyl->centbase->y + cyl->radius, cyl->centbase->z + cyl->height);
 	return r;
 }
 

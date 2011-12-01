@@ -43,4 +43,4 @@ leak:
 	
 leaklog:
 	make all
-	valgrind --leak-check=full -q --log-file=leaklog.txt ./$(OUTPUT)	
+	valgrind --leak-check=full --log-file=leaklog.txt ./$(OUTPUT)	

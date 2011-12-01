@@ -45,12 +45,12 @@ int rinsphr(sphere* sphr, rect* r) {
 				close = malloc(sizeof(point));
 				far = malloc(sizeof(point));
 				/* Not using createp here to add readability */
-				close->x = close->x = amin(r->p1.x - sphr->center->x, r->p2.x - sphr->center->x) + sphr->center->x;
-				close->x = close->y = amin(r->p1.y - sphr->center->y, r->p2.y - sphr->center->y) + sphr->center->y;
-				close->z = close->z = amin(r->p1.z - sphr->center->z, r->p2.z - sphr->center->z) + sphr->center->z;
-				far->x = close->x = amax(r->p1.x - sphr->center->x, r->p2.x - sphr->center->x) + sphr->center->x;
-				far->x = close->y = amax(r->p1.y - sphr->center->y, r->p2.y - sphr->center->y) + sphr->center->y;
-				far->z = close->z = amax(r->p1.z - sphr->center->z, r->p2.z - sphr->center->z) + sphr->center->z;
+				close->x = close->x = amin(r->min.x - sphr->center->x, r->max.x - sphr->center->x) + sphr->center->x;
+				close->x = close->y = amin(r->min.y - sphr->center->y, r->max.y - sphr->center->y) + sphr->center->y;
+				close->z = close->z = amin(r->min.z - sphr->center->z, r->max.z - sphr->center->z) + sphr->center->z;
+				far->x = close->x = amax(r->min.x - sphr->center->x, r->max.x - sphr->center->x) + sphr->center->x;
+				far->x = close->y = amax(r->min.y - sphr->center->y, r->max.y - sphr->center->y) + sphr->center->y;
+				far->z = close->z = amax(r->min.z - sphr->center->z, r->max.z - sphr->center->z) + sphr->center->z;
 				/* only need to test the three lines connected to the corner closest to the center of the sphere */
 				/* give them each their own if to save the compiler time if one intersects */
 				if (linsphr(sphr, close, createp(far->x, close->y, close->z))) {

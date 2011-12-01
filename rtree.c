@@ -202,12 +202,12 @@ int subrt(rtree* tree){
 			 * Sub1 starts with the highest point, sub2 with the lowest.
 			 */
 			if (max){
-				setxyz(&tree->sub1->mbr.p1, max->x, max->y, max->z);
-				setxyz(&tree->sub1->mbr.p2, max->x, max->y, max->z);
+				setxyz(&tree->sub1->mbr.min, max->x, max->y, max->z);
+				setxyz(&tree->sub1->mbr.max, max->x, max->y, max->z);
 			}
 			if (min){
-				setxyz(&tree->sub2->mbr.p1, min->x, min->y, min->z);
-				setxyz(&tree->sub2->mbr.p2, min->x, min->y, min->z);
+				setxyz(&tree->sub2->mbr.min, min->x, min->y, min->z);
+				setxyz(&tree->sub2->mbr.max, min->x, min->y, min->z);
 			}
 			for (i = 0; i < tree->pa.len; i++){
 
@@ -381,8 +381,8 @@ rtree* creatert() {
 	tree = (rtree*) malloc(sizeof(rtree));
 	tree->leaf = 1;
 	tree->pa = *createpa();
-	setxyz(&tree->mbr.p1, 0, 0, 0);
-	setxyz(&tree->mbr.p2, 0, 0, 0);
+	setxyz(&tree->mbr.min, 0, 0, 0);
+	setxyz(&tree->mbr.max, 0, 0, 0);
 	return tree;
 }
 

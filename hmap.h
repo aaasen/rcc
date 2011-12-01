@@ -5,6 +5,9 @@
  * pixels from an rtree, with z as the r, g, or b values.
  */
 
+#ifndef HMAP_H
+#define HMAP_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -12,21 +15,18 @@
 #include "rtree.h"
 #include "point.h"
 #include "qdbmp.h"
+#include "parray.h"
 
-#ifndef HMAP_H
-#define HMAP_H
-
-typedef struct{
+typedef struct RCC_HEADER {
 	uint32_t mnum; /* Magic number, always 0xA9D7FABA */
 	uint32_t checksum;
-    uint64_t flags;
-    uint16_t channelspec;
-    uint16_t xpix; /* Length of image x axis */
-    uint16_t ypix; /* Length of image y axis */
-    uint8_t coldepth; /* Color depth in bytes */
+	uint64_t flags;
+	uint16_t channelspec;
+	uint16_t xpix; /* Length of image x axis */
+	uint16_t ypix; /* Length of image y axis */
 } RCC_HEADER;
 
-typedef struct{
+typedef struct RCC_CHANNEL_HEADER {
 	/*
 	 * TODO The color variable sizes will need to be changed to handle images
 	 * with more color depth at some point, so this struct is temporary
@@ -35,16 +35,25 @@ typedef struct{
 	uint8_t g;
 	uint8_t b;
 	uint8_t a;
+	uint8_t depth;
 	uint32_t cbsize; /* Size of channel body */
 } RCC_CHANNEL_HEADER;
 
 /* We need this because we can't save to the bitmap one color value at a time */
-typedef struct{
+typedef struct pixel {
 	uint8_t r;
 	uint8_t g;
 	uint8_t b;
 } pixel;
-	
+
+/* Private 2D rectangle struct with color value */
+typedef struct crect {
+	uint16_t x1;
+	uint16_t y1;
+	uint16_t x2;
+	uint16_t y2;
+	uint8_t color;
+} crect;
 
 /* Load the bmp image into r, g, and b rtrees */
 int loadbmp(char* file, rtree* r, rtree* g, rtree* b);

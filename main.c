@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
 	
 	loadbmp("testing/colors.bmp", rrt, grt, brt);
 	savercc("out.rcc", rrt, grt, brt);
-	/* rcctobmp("out.rcc", "out.bmp"); */
+	rcctobmp("out.rcc", "out.bmp"); 
 
 	filename = NULL;
 	outfilename = OUTFILE;

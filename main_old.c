@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
 
 	tostringrt(rrt);
  	rect* r1 = malloc(sizeof(rect));
- 	setxyz(&r1->p1, 0, 0, 0);
+ 	setxyz(&r1->min, 0, 0, 0);
  	setxyz(&r1->p2, 1, 1, 1);
 
  	point* p1 = malloc(sizeof(point));
@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 
  	rect* r2 = malloc(sizeof(rect));
  	setxyz(&r2->p2, .5, .5, .5);
- 	setxyz(&r2->p1, 2, 2, 2);
+ 	setxyz(&r2->min, 2, 2, 2);
 
 	point* px1 = malloc(sizeof(point));
 	setxyz(px1, 0, 0, 0);
@@ -97,7 +97,7 @@ int main(int argc, char *argv[]) {
 	bputrt(rttest, prttest, 5);
 	
 	rect* rtest = (rect*) malloc(sizeof(rect));
-	rtest->p1 = prttest[0]; 
+	rtest->min = prttest[0]; 
 	rtest->p2 = prttest[3];
 	
 	tostringpa(rectqrt(rttest, rtest));
