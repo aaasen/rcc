@@ -17,6 +17,10 @@
 #include "qdbmp.h"
 #include "parray.h"
 
+#define		RED		1
+#define 	GREEN	2
+#define		BLUE	4
+
 typedef struct RCC_HEADER {
 	uint32_t mnum; /* Magic number, always 0xA9D7FABA */
 	uint32_t checksum;
@@ -31,10 +35,11 @@ typedef struct RCC_CHANNEL_HEADER {
 	 * TODO The color variable sizes will need to be changed to handle images
 	 * with more color depth at some point, so this struct is temporary
 	 */
-	uint8_t r; /* Red color bitmask */
-	uint8_t g;
-	uint8_t b;
-	uint8_t a;
+	 
+	 /* represents color, can be bitmasked with constant color IDs in conditional for extraction */
+	 /* e.g. RCC_CHANNEL_HEADER->color & RED will return true if the channel is red */
+	 /* this can be repeated for up to 8 (may change later) channels */
+	uint8_t color; 
 	uint8_t depth;
 	uint32_t cbsize; /* Size of channel body */
 } RCC_CHANNEL_HEADER;
@@ -74,13 +79,13 @@ int rrcchead(FILE* compressed, RCC_HEADER* header);
 void rchead(FILE* compressed, RCC_CHANNEL_HEADER* header);
 
 /* Save an individual channel to a file, returns 1 if successful, 0 otherwise*/
-int schead(FILE* file, rtree* rtree, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+int schead(FILE* file, rtree* rtree, uint8_t color);
 
 /* Saves the channel body, recursively traversing each node of the rtree, returns size of body */
 int scbody(FILE* file, rtree* r);
 
 /* Takes an rtree and saves it as a channel in an rcc file, return true if successful */
-int savec(FILE* file, rtree* rt, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+int savec(FILE* file, rtree* rt, uint8_t color);
 
 
 #endif
