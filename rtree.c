@@ -76,7 +76,9 @@ rtree* putrt(rtree * tree, point * p){
 
 			double rszsub1 = rszsum(&tree->sub1->mbr, p);
 			double rszsub2 = rszsum(&tree->sub2->mbr, p);
-			rtree* bestnode = rszsub1 >= rszsub2 ? tree->sub1 : tree->sub2;
+			rtree* bestnode = rszsub1 != rszsub2 ? 
+				(rszsub1 <= rszsub2 ? tree->sub1 : tree->sub2) :
+				(tree->sub1->pa.len <= tree->sub2->pa.len ? tree->sub1 : tree->sub2);
 			putrt(bestnode, p);
 			
 		}

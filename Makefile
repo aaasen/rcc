@@ -16,7 +16,7 @@ OBJECTS = main.o rtree.o point.o rect.o qdbmp.o hmap.o parray.o\
 	 sphere.o cylinder.o rectarray.o
 MAIN = main
 CC = gcc
-OUTPUT = rtree
+OUTPUT = rcc
 
 objects:
 	$(CC) -g -c $(FILES)			# -g for debugging

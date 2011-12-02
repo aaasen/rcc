@@ -85,7 +85,7 @@ int loadbmp(char* file, rtree* r, rtree* g, rtree* b){
 	BMP_CHECK_ERROR( stdout, -1 );
 	w = BMP_GetWidth(img);
 	h = BMP_GetHeight(img);
-	printf("IMG W = %d & H = %d\n", w, h);
+	printf("  image dimensions: (%d, %d)\n", w, h);
 	pcount = w * h;
   	points = (point*)malloc(sizeof(point) * pcount);
 
