@@ -1,0 +1,86 @@
+  ______________________
+ |  ____                | * * * * * * * * * * * * *
+ | |    |               |   _         __      __  *
+ | | ___|________       |  ||\\      / _|    / _| *
+ | ||   |        |      |  || \\    / /     / /   *
+ | ||___|  ___   |      |  || //   | |     | |    *
+ |  |     |   |  |      |  ||/\\    \ \_    \ \_  *
+ |  |     |___|  |      |  ||  \\    \__|    \__| *
+ |  |____________|      |                         *
+ |______________________| * * * * * * * * * * * * *
+
+    	RTREE COMPRESSION CODEC
+
+Created by:
+
+----Lane "Laaame" Aasen (laneaasen@gmail.com)
+    ----Eamon "G-Dawg" Gaffney (ghug99@gmail.com)
+    	----Dylan "D-Swag" Swiggett (omnipotentperson@gmail.com)
+
+Welcome to RCC, the RTree-based compression codec for images!
+
+USAGE:
+    $ make all
+    $ ./rcc [option [option argument]?]* [input file]?
+    
+    Available options are as follows:
+    
+    -h
+    	Show this documentation/help text
+    	
+    -m [compression level (int)]
+    	Set the compression level (0 is lossless,
+    	higher values mean more compression,
+    	default is 5)
+    
+    -o [filename]
+    	Specify an output file name (default is out).
+    
+    
+====================Information for Curious Users====================
+
+BACKGROUND:
+    RCC uses RTrees, which are tree data structures made of rectangles
+(hence the name RTree) which perform very well on sporadic as well 
+as uniform multi-dimensional data like the data found in images.
+
+    Note: In RCC, RTrees are limited to 2 child nodes.
+
+SUMMARY:
+    RCC converts images into 3D RTrees using x and y as pixel coordinates
+and z as channel value (e.g. red value in red channel). Those familiar
+with RTrees know that they offer four main functions: insert, delete,
+subdivide and search. The following section details the methods in
+which these functions are implemented.
+
+INSERTION:
+    In RCC, points are inserted by recurively traversing the tree and
+creating a finding the node which requires the least expansion to
+accomodate the point. If both child nodes are equally fit, the one
+with the fewest points is chosen.
+    RCC also has support for bulk-loading which is used to quickly
+load points en masse (e.g. images).
+
+DELETION:
+    RCC achieves point deletion by recurively traversing the RTree
+and deleting the first matching point.
+
+SUBDIVISION:
+    RCC uses standard deviation to decide whether or not a node
+must be split. If the standard deviation of the points in a node
+is above a certain threshold the node is split. Changing this
+threshold directly affects the compression level of the image,
+as colors that are further apart get lumped into the same node
+as the threshold rises and vise-versa. A standard deviation threshold
+of 0 results in lossless compression (or, more accurately, expansion).
+
+SEARCH:
+    RCC offers a variety of search functions including point,
+rectangular prism, sphere and cylinder. New search functions may
+be implemented by creating two functions:
+    shape_overlap_rectangle()
+    point_in_shape()
+which should be inclusive.
+
+Google Code Page: http://code.google.com/p/rtree-compression-codec/
+
