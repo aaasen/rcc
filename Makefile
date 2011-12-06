@@ -1,13 +1,16 @@
-# Make file by Dylan Swiggett
-# Written on Linux Mint 11
-# Only compatible with unix/linux based operating systems
-#
+# Make file by Lane Aasen and Dylan Swiggett
+# Only compatible with Unix/Linux based operating systems
+
 # make objects - compile all c files to objects
 # make exe - compile all objects to an executable
 # make clean - remove all object files
 # make all - compile objects, make executable, clean directory
 # make run - do full compile and clean, then run
 # make leak - make all and then run a full valgrind leak check on the output
+# make leaklog - make leak but output to a file instead of stdout
+# make archive - compress the output (.gz), give it a meaningful name and
+#	move it into the ARCHIVEDIR
+# make cleanarchive - deletes all files in ARCHIVEDIR
 
 CFLAGS = -Wall -lm
 FILES = main.c rtree.c point.c rect.c qdbmp.c hmap.c parray.c\
@@ -17,30 +20,56 @@ OBJECTS = main.o rtree.o point.o rect.o qdbmp.o hmap.o parray.o\
 MAIN = main
 CC = gcc
 OUTPUT = rcc
+LEAKFILE = leaklog.txt
+ARCHIVEDIR = arc
+DATEFORMAT = %d-%m-%y:%s 
+ARCHIVEID = `date +$(DATEFORMAT)`
+ARCHIVENAME = $(OUTPUT)$(ARCHIVEID)
+ARCHIVEDEST = $(ARCHIVEDIR)/$(ARCHIVENAME)
 
 objects:
-	$(CC) -g -c $(FILES)			# -g for debugging
-
+	@echo "compiling source..."
+	@$(CC) -g -c $(FILES)			# -g for debugging
+	
 exe:
-	$(CC) -g $(CFLAGS) $(OBJECTS) -o $(OUTPUT)
-
+	@echo "linking objects..."
+	@$(CC) -g $(CFLAGS) $(OBJECTS) -o $(OUTPUT)
+	
 clean:
-	rm $(OBJECTS)
+	@echo "removing object files..."
+	@rm $(OBJECTS)
 
 all:
-	make objects
-	make exe
-	make clean
-	@echo Yay! Compiled
+	@make -s objects
+	@make -s exe
+	@make -s clean
+	@echo "compilation of $(OUTPUT) complete!"
 
 run:
-	make all
-	./$(OUTPUT)
+	@make -s all
+	@./$(OUTPUT)
 
 leak:
-	make all
+	@make -s all
+	@echo "\nchecking $(OUTPUT) for leaks..."
+	@echo "WARNING: SHITSTORM IMMINENT!!!\n"
 	valgrind --leak-check=full ./$(OUTPUT)
 	
 leaklog:
-	make all
-	valgrind --leak-check=full --log-file=leaklog.txt ./$(OUTPUT)	
+	@make -s all
+	@echo "\nchecking $(OUTPUT) for leaks and outputting to $(LEAKFILE)\n"
+	valgrind --leak-check=full --log-file=$(LEAKFILE) ./$(OUTPUT)	
+	
+archive:
+	@make -s all
+	@echo "\nmake sure '$(ARCHIVEDIR)' is an existing directory!\n"
+	@echo "copying '$(OUTPUT)' into '$(ARCHIVEDIR)'"
+	@cp $(OUTPUT) $(ARCHIVEDEST)
+	@echo "creating compressed archive: '$(ARCHIVENAME).gz'"
+	@gzip $(ARCHIVEDEST)
+	
+cleanarchive:
+	@rm -r $(ARCHIVEDIR)
+	@mkdir $(ARCHIVEDIR)
+
+
