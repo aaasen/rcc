@@ -28,13 +28,12 @@ int main(int argc, char *argv[]) {
 					       flags have been called */
 	enum FLAGS curflag; /* Current flag */
 	FILE* manual;
+	int complevel = 5;
 
 	rrt = creatert();
 	grt = creatert();
 	brt = creatert();
 	
-/*	loadbmp("testing/colors.bmp", rrt, grt, brt);*/
-/*	savercc("out.rcc", rrt, grt, brt);*/
 /*	rcctobmp("out.rcc", "out.bmp"); */
 
 	filename = NULL;
@@ -66,28 +65,32 @@ int main(int argc, char *argv[]) {
 		} else {
 			switch(curflag){ /* How to behave if a flag has been set */
 			case MAXSDEV:
-				setmaxsdev(atoi(arg));
+				complevel = atoi(arg);
 				printf("Set compression level to %d\n", atoi(argv[i]));
 				break;
 			case OUTFILENAME:
 				outfilename = arg;
-				printf("Output file set to %s\n", outfilename);
+/*				printf("Output file set to %s\n", outfilename);*/
 				break;
 			default:
 				filename = arg;
-				printf("Looking for something? Run with '-h' for documentation.\n");
+/*				printf("Looking for something? Run with '-h' for documentation.\n");*/
 				break;
 			}
 			curflag = NONE; /* The flag has taken input, and is disabled */
 		}
 	}
 
+	setmaxsdev(atoi(arg));
+
 	if (filename){
-		printf("Loading BMP %s\n", filename);
+		printf("Loading rtrees from \'%s\'\n", filename);
 		if (!loadbmp(filename, rrt, grt, brt)){
 			printf("Failed to load BMP. Exiting.\n");
 			exit(0);
 		}
+		printf("Saving rtrees to \'%s\' with compression level of %d\n", outfilename, complevel);
+		savebmp(outfilename, rrt, grt, brt);
 	} else {
 		printf("Using default BMP %s\n", TESTFILE);
 		if (!loadbmp(TESTFILE, rrt, grt, brt)){
