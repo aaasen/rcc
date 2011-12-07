@@ -11,28 +11,28 @@ CC := gcc
 OUTPUT := rcc
 LEAKFILE := leaklog.txt
 ARCHIVEDIR := arc
-DATEFORMAT := %d-%m-%y:%s
+DATEFORMAT := %d-%m-%y-%s
 ARCHIVEID := `date +$(DATEFORMAT)`
 ARCHIVENAME := $(OUTPUT)$(ARCHIVEID)
 ARCHIVEDEST := $(ARCHIVEDIR)/$(ARCHIVENAME)
 
 help:
 	@echo "RCC makefile"
-	@echo "\tOnly compatible with Unix/Linux based operating systems\n"
+	@echo "    Only compatible with Unix/Linux based operating systems\n"
 	@echo "METHODS"
-	@echo "\tmake objects - compile all c files to objects"
-	@echo "\tmake exe - compile all objects to an executable"
-	@echo "\tmake clean - remove all object files"
-	@echo "\tmake all - compile objects, make executable, clean directory"
-	@echo "\tmake run - do full compile and clean, then run"
-	@echo "\tmake leak - make all and then run a"
-	@echo "\t  full valgrind leak check on the output"
-	@echo "\tmake leaklog - make leak but output to a file instead of stdout"
-	@echo "\tmake archive - compress the output (.gz),"
-	@echo "\t  give it a meaningful name and"
-	@echo "\t  move it into the ARCHIVEDIR"
-	@echo "\t  -unzip using gunzip -r [archivename]"
-	@echo "\tmake cleanarchive - deletes all files in ARCHIVEDIR"
+	@echo "    make objects - compile all C source code into objects"
+	@echo "    make exe - link all objects to create an executable"
+	@echo "    make clean - remove all object files"
+	@echo "    make all - make objects, exe and clean"
+	@echo "    make run - make all then run"
+	@echo "    make leak - make all and then run valgrind on the output"
+	@echo "    make leaklog - make leak but output to a file instead of stdout"
+	@echo "    make arcprep - make all and check that ARCHIVEDIR exists"
+	@echo "    make arcbin - make arcprep, copy executable to ARCHIVEDIR,"
+	@echo "      give it a unique name and gzip"
+	@echo "    make arcsrc - make arcprep, copy source code to ARCHIVEDIR,"
+	@echo "      give it a unique name, tar directory and gzip"
+	@echo "    make cleanarchive - deletes all files in ARCHIVEDIR"
 
 objects:
 	@echo "compiling source..."
@@ -80,13 +80,15 @@ arcbin:
 	
 arcsrc:
 	@make -s arcprep
-	@echo "copying source code into '$(ARCHIVEDEST)'"
+	@echo "copying source code into '$(ARCHIVEDEST)'..."
 	@mkdir $(ARCHIVEDEST)
 	@cp $(FILES) $(ARCHIVEDEST)
-	@echo "gzipping all files in '$(ARCHIVEDEST)'"
-	@gzip -r $(ARCHIVEDEST)
+	@echo "creating archive: '$(ARCHIVEDEST).tar'..."
+	@tar -c -f "$(ARCHIVEDEST).tar" $(ARCHIVEDEST)
+	@echo "compressing archive: '$(ARCHIVEDEST).tar.gz'..."
+	@gzip "$(ARCHIVEDEST).tar"
 
-cleanarchive:
+arcclean:
 	@rm -r $(ARCHIVEDIR)
 	@mkdir $(ARCHIVEDIR)
 
