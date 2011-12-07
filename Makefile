@@ -32,7 +32,7 @@ help:
 	@echo "      give it a unique name and gzip"
 	@echo "    make arcsrc - make arcprep, copy source code to ARCHIVEDIR,"
 	@echo "      give it a unique name, tar directory and gzip"
-	@echo "    make cleanarchive - deletes all files in ARCHIVEDIR"
+	@echo "    make arcclean - deletes all non-svn files in ARCHIVEDIR"
 
 objects:
 	@echo "compiling source..."
@@ -80,15 +80,17 @@ arcbin:
 	
 arcsrc:
 	@make -s arcprep
-	@echo "copying source code into '$(ARCHIVEDEST)'..."
+	@echo "copying source code..."
 	@mkdir $(ARCHIVEDEST)
 	@cp $(FILES) $(ARCHIVEDEST)
-	@echo "creating archive: '$(ARCHIVEDEST).tar'..."
+	@echo "creating archive..."
 	@tar -c -f "$(ARCHIVEDEST).tar" $(ARCHIVEDEST)
-	@echo "compressing archive: '$(ARCHIVEDEST).tar.gz'..."
+	@echo "compressing archive..."
 	@gzip "$(ARCHIVEDEST).tar"
+	@echo "cleaning up..."
+	@rm -r "$(ARCHIVEDEST)"
+	@echo "compressed archive available at:\n    '$(ARCHIVEDEST).tar.gz'"
 
 arcclean:
-	@rm -r $(ARCHIVEDIR)
-	@mkdir $(ARCHIVEDIR)
+	@python arcclean.py $(ARCHIVEDIR)
 
