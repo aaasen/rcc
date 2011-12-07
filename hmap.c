@@ -17,28 +17,28 @@
 #define		BLUE	4
 #define		ALPHA	8
 
-typedef struct RCC_HEADER {
+typedef struct rcchead {
 	uint32_t mnum; /* Magic number, always 0xA9D7FABA */
 	uint32_t checksum;
 	uint64_t flags;
 	uint16_t channelspec;
 	uint16_t xpix; /* Length of image x axis */
 	uint16_t ypix; /* Length of image y axis */
-} RCC_HEADER;
+} rcchead;
 
-typedef struct RCC_CHANNEL_HEADER {
+typedef struct rccsubhead {
 	/*
 	 * TODO The color variable sizes will need to be changed to handle images
 	 * with more color depth at some point, so this struct is temporary
 	 */
-	 
+
 	 /* represents color, can be bitmasked with constant color IDs in conditional for extraction */
-	 /* e.g. RCC_CHANNEL_HEADER->color & RED will return true if the channel is red */
+	 /* e.g. rccsubhead->color & RED will return true if the channel is red */
 	 /* this can be repeated for up to 8 (may change later) channels */
-	uint8_t color; 
+	uint8_t color;
 	uint8_t depth;
 	uint32_t cbsize; /* Size of channel body */
-} RCC_CHANNEL_HEADER;
+} rccsubhead;
 
 /* We need this because we can't save to the bitmap one color value at a time */
 typedef struct pixel {
@@ -60,8 +60,8 @@ int loadbmp(char* file, rtree* r, rtree* g, rtree* b);
 int savebmp(char* file, rtree* r, rtree* g, rtree* b);
 int savercc(char* file, rtree* r, rtree* g, rtree* b);
 //int rcctobmp(char* rccfile, char* bmpfile);
-int rrcchead(FILE* compressed, RCC_HEADER* header);
-void rchead(FILE* compressed, RCC_CHANNEL_HEADER* header);
+int rrcchead(FILE* compressed, rcchead* header);
+void rchead(FILE* compressed, rccsubhead* header);
 int schead(FILE* file, rtree* rtree, uint8_t color);
 int savec(FILE* file, rtree* rt, uint8_t color);
 
@@ -75,7 +75,7 @@ int loadbmp(char* file, rtree* r, rtree* g, rtree* b){
 	UCHAR rchar, bchar, gchar;
 	int i, j; /* Iterators */;
 	int rval, gval, bval;
-	
+
 	/* Load the image */
 	img = BMP_ReadFile(file);
 	if (!img){
@@ -93,7 +93,7 @@ int loadbmp(char* file, rtree* r, rtree* g, rtree* b){
 	r->leaf = 1;
 	g->leaf = 1;
 	b->leaf = 1;
-	
+
 	/* Get rgb values for all pixels, store as points */
 	for (i = w - 1; i>=0; i--){
 		for (j = h - 1; j>=0; j--){
@@ -137,7 +137,7 @@ void rtavgpoints(rtree* rt, parray* pa){
 			  /* printf("POINT ADDED, z = %.2f\n", p->z); */
 			}
 		}
-		
+
 	} else {
 		rtavgpoints(rt->sub1, pa);
 		rtavgpoints(rt->sub2, pa);
@@ -146,7 +146,7 @@ void rtavgpoints(rtree* rt, parray* pa){
 
 /* Save the rtrees to the specified bitmap file, return true if successful. */
 int savebmp(char* file, rtree* r, rtree* g, rtree* b){
-	
+
 	BMP* img, *rimg, *gimg, *bimg;
 	pixel* pixels;
 	pixel* pixeltemp;/* Temporary pixel for drawing to the BMP */
@@ -166,13 +166,13 @@ int savebmp(char* file, rtree* r, rtree* g, rtree* b){
 	rpa = createpa();
 	gpa = createpa();
 	bpa = createpa();
-	
+
 /*	printf("W = %d -- H = %d\n", w, h);*/
 
 	rtavgpoints(r, rpa);
 	rtavgpoints(g, gpa);
 	rtavgpoints(b, bpa);
-	
+
 	pixels = (pixel*)malloc(sizeof(pixel) * w * h);
 
 	/* Get all pixel values */
@@ -188,7 +188,7 @@ int savebmp(char* file, rtree* r, rtree* g, rtree* b){
 		p = &bpa->points[i];
 		pixels[(int)p->x * h + (int)p->y].b = (int)p->z;
 	}
-	
+
 	/* Draw the BMP */
 	for (i = 0; i < w * h; i++){
 		pixeltemp = &pixels[i];
@@ -217,30 +217,30 @@ int savebmp(char* file, rtree* r, rtree* g, rtree* b){
 int rcctobmp(char* rccfile, char* bmpfile){
     FILE* compressed ;
     BMP* target;
-    RCC_HEADER* head;
+    rcchead* head;
     int lsize; /* Size of the file's representation of an rtree leaf */
-    RCC_CHANNEL_HEADER* chead; /* Channel header, reused for each channel */
+    rccsubhead* chead; /* Channel header, reused for each channel */
     //crect* leaf; /* Rectangle used for reading each node within the for loop  */
     pixel* data; /* Raw data to be saved to bitmap, stored x, y */
     int depth = 0;
     int i, j, k; /* Iterators */
-    
+
     compressed = fopen(rccfile, "r");
     if (!compressed){
         return 0; /* Unable to open rcc file  */
     }
-    head = (RCC_HEADER*) malloc(sizeof(RCC_HEADER));
+    head = (rcchead*) malloc(sizeof(rcchead));
     if (!rrcchead(compressed, head)){
     	return 0;
     }
-    
+
 	lsize = (int) sizeof(crect); /* This will have to be derived from the header eventually */
 
     /* Converts the data from the rcc into pixels */
     data = (pixel*) malloc(sizeof(pixel)*head->xpix*head->ypix);
     printf("allocmem: %d\n", head->xpix*head->ypix);
     while (!feof(compressed)){ /* Keeps going until the file ends, so we can have any number of channels */
-    	chead = (RCC_CHANNEL_HEADER*) malloc(sizeof(RCC_CHANNEL_HEADER));
+    	chead = (rccsubhead*) malloc(sizeof(rccsubhead));
     	rchead(compressed, chead);
      	for (i = 0; i < chead->cbsize; i += lsize){
      		crect* leaf = (crect*) malloc(sizeof(leaf));
@@ -276,15 +276,15 @@ int rcctobmp(char* rccfile, char* bmpfile){
 	   	}
     }
     BMP_WriteFile(target, bmpfile);
-    
+
     BMP_Free(target);
     fclose(compressed);
     return 1;
 }
 
 /* Reads the header of an rcc file, returns true if the file is valid  */
-int rrcchead(FILE* compressed, RCC_HEADER* header) {
- 	fread(header, sizeof(RCC_HEADER), 1, compressed);
+int rrcchead(FILE* compressed, rcchead* header) {
+ 	fread(header, sizeof(rcchead), 1, compressed);
     	if (header->mnum != 0xA9D7FABA){
      		return 0; /* File not an rcc file  */
      	}
@@ -293,17 +293,17 @@ int rrcchead(FILE* compressed, RCC_HEADER* header) {
 }
 
 /* Read a channel header starting at the position indicator of the given file */
-void rchead(FILE* compressed, RCC_CHANNEL_HEADER* header) {
- 	fread(header, sizeof(RCC_CHANNEL_HEADER), 1, compressed);
+void rchead(FILE* compressed, rccsubhead* header) {
+ 	fread(header, sizeof(rccsubhead), 1, compressed);
 }
 
 /* Save an individual channel to a file, returns 1 if successful, 0 otherwise */
 int schead(FILE* file, rtree* rtree, uint8_t color) {
  	if (file) {
- 		RCC_CHANNEL_HEADER* chanhead = (RCC_CHANNEL_HEADER*) malloc(sizeof(RCC_CHANNEL_HEADER));
+ 		rccsubhead* chanhead = (rccsubhead*) malloc(sizeof(rccsubhead));
  		chanhead->color = color;
  		chanhead->cbsize = 8;
- 		fwrite(chanhead, sizeof(RCC_CHANNEL_HEADER), 1, file);
+ 		fwrite(chanhead, sizeof(rccsubhead), 1, file);
  		return 1;
  	} return 0;
 }
@@ -312,7 +312,7 @@ int schead(FILE* file, rtree* rtree, uint8_t color) {
 int scbody(FILE* file, rtree* r) {
  	uint8_t avg; /* average color, to be reused */
  	crect* rect;
-	
+
  	if (file) {
  		if (r->leaf) {
        /* Construct the crect for saving from the leaf  */
@@ -335,7 +335,7 @@ int scbody(FILE* file, rtree* r) {
 int savec(FILE* file, rtree* rt, uint8_t color) {
 	long fpos; /* Position in file */
 	uint32_t bsize;
-	
+
 	if (file) {
 	 	schead(file, rt, color);
 	 	fpos = ftell(file) - 4;
@@ -353,7 +353,7 @@ int savec(FILE* file, rtree* rt, uint8_t color) {
 
 /* Save the rtrees to the specified rcc file, return true if successful.  */
 int savercc(char* file, rtree* r, rtree* g, rtree* b) {
- 	RCC_HEADER* head = malloc(sizeof(RCC_HEADER));
+ 	rcchead* head = malloc(sizeof(rcchead));
  	uint32_t bsize; /* channel body size */
  	FILE* target = fopen(file, "w");
 
@@ -364,7 +364,7 @@ int savercc(char* file, rtree* r, rtree* g, rtree* b) {
  	head->channelspec = 57344; /* First three bits of a 16 bit int */
  	head->xpix = abs(r->mbr.max.x - r->mbr.min.x);
  	head->ypix = abs(r->mbr.max.y - r->mbr.min.y);
- 	fwrite(head, sizeof(RCC_HEADER), 1, target);
+ 	fwrite(head, sizeof(rcchead), 1, target);
 
  	savec(target, r, RED);
  	savec(target, g, GREEN);

@@ -89,7 +89,8 @@ int main(int argc, char *argv[]) {
 			printf("Failed to load BMP. Exiting.\n");
 			exit(0);
 		}
-		printf("Saving rtrees to \'%s\' with compression level of %d\n", outfilename, complevel);
+		printf("Saving rtrees to \'%s\' with compression level of %d\n", 
+			outfilename, complevel);
 		savebmp(outfilename, rrt, grt, brt);
 	} else {
 		printf("Using default BMP %s\n", TESTFILE);
