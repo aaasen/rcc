@@ -23,7 +23,7 @@ In this way, RCC preserves details like facial features and text even at high co
 ## Installation
 
 ```bash
-$ svn checkout http://rtree-compression-codec.googlecode.com/svn/trunk/ rcc
+$ git clone git://github.com/aaasen/rcc.git
 $ cd rcc
 $ make all
 $ ./rcc [input-file-name.bmp]
