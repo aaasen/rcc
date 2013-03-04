@@ -6,7 +6,7 @@ RCC converts images into heightmaps for each channel (red, green, blue, alpha), 
 Compression is achieved by grouping sets of nearby points into single rectangles, or RTrees.
 In this way, RCC preserves details like facial features and text even at high compression levels.
 
-## Tests
+## RCC In Action
 
 | Original | Compressed | Compression Level |
 |---|---|---|
@@ -20,7 +20,7 @@ In this way, RCC preserves details like facial features and text even at high co
 |![](http://i.imgur.com/0sTgE.png)|![](http://i.imgur.com/EwTrT.png)|20|
 |![](http://i.imgur.com/0sTgE.png)|![](http://i.imgur.com/4UFC4.png)|30|
 
-### Usage
+### Installation
 
 ```bash
 $ svn checkout http://rtree-compression-codec.googlecode.com/svn/trunk/ rcc
@@ -28,10 +28,12 @@ $ cd rcc
 $ make all
 $ ./rcc [input-file-name.bmp]
 ```
-    
-### Runtime Options
+
+### Usage
 
 ```
+$ rcc [input-file-name.bmp]
+
 -h
     show this documentation/help text
   
