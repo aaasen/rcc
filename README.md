@@ -20,7 +20,7 @@ In this way, RCC preserves details like facial features and text even at high co
 |![](http://i.imgur.com/0sTgE.png)|![](http://i.imgur.com/EwTrT.png)|20|
 |![](http://i.imgur.com/0sTgE.png)|![](http://i.imgur.com/4UFC4.png)|30|
 
-### Installation
+## Installation
 
 ```bash
 $ svn checkout http://rtree-compression-codec.googlecode.com/svn/trunk/ rcc
@@ -29,7 +29,7 @@ $ make all
 $ ./rcc [input-file-name.bmp]
 ```
 
-### Usage
+## Usage
 
 ```
 $ rcc [input-file-name.bmp]
@@ -44,7 +44,7 @@ $ rcc [input-file-name.bmp]
     specify an output file name (default is "out")
 ```
 
-### Authors
+## Authors
 
  * **Lane Aasen** [*github*](http://github.com/aaasen)
  * **Eamon Gaffney** [*github*](http://github.com/negaffney)
